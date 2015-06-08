@@ -1,32 +1,166 @@
-package moltin.example_moltin;
+package moltin.example_moltin.activities;
 
-import android.app.AlertDialog;
+import android.app.Fragment;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
+
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import moltin.android_sdk.Moltin;
 import moltin.android_sdk.utilities.Constants;
+import moltin.example_moltin.R;
+import moltin.example_moltin.data.CollectionItem;
+import moltin.example_moltin.fragments.CollectionFragment;
+import moltin.example_moltin.fragments.MenuFragment;
 
 
-public class MainActivity extends ActionBarActivity {
+public class CollectionActivity extends SlidingFragmentActivity implements CollectionFragment.OnFragmentInteractionListener,MenuFragment.OnFragmentInteractionListener{
     private Moltin moltin;
+    private Context context;
+
+    private ActionBar actionBar;
+    private SlidingMenu menu;
+    private android.app.Fragment mContent;
+    private MenuFragment menuFragment;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        //setContentView(R.layout.activity_collection);
 
         moltin = new Moltin(this);
+        //moltin.resetAuthenticationData();
 
-        moltin.resetAuthenticationData();
+
+
+        try
+        {
+            moltin.authenticate("umRG34nxZVGIuCSPfYf8biBSvtABgTR8GMUtflyE"/*"wf60kt82vtzkjIMslZ1FmDyV8WUWNQlLxUiRVLS4"*/, new Handler.Callback() {
+                @Override
+                public boolean handleMessage(Message msg) {
+                    showPopup(msg.obj.toString());
+                    if (msg.what == Constants.RESULT_OK) {
+
+                        try {
+                            getCollections();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        menu = getSlidingMenu();
+        menu.setShadowWidth(0);
+        menu.setBehindWidth(200);
+        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+        menu.setTouchModeBehind(SlidingMenu.TOUCHMODE_FULLSCREEN);
+        menu.setMode(SlidingMenu.LEFT);
+        menu.setFadeEnabled(false);
+        menu.setBehindScrollScale(0.5f);
+        setSlidingActionBarEnabled(true);
+
+        context = this;
+
+        ArrayList<CollectionItem> items = new ArrayList<CollectionItem>();
+
+        if (savedInstanceState != null)
+            mContent = getFragmentManager().getFragment(savedInstanceState, "mContent");
+        if (mContent == null) {
+            mContent = CollectionFragment.newInstance(items, "", 0);
+        }
+
+        setContentView(R.layout.collection_content_frame);
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.collection_content_frame, mContent)
+                .commit();
+
+        setBehindContentView(R.layout.menu_frame);
+        menuFragment = MenuFragment.newInstance();
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.menu_frame, menuFragment)
+                .commit();
+
+        /*((LinearLayout)findViewById(R.id.btnCollections)).setBackgroundColor(getResources().getColor(R.color.BLACK));
+        ((LinearLayout)findViewById(R.id.btnCart)).setBackgroundColor(getResources().getColor(android.R.color.transparent));
+        ((LinearLayout)findViewById(R.id.btnPayment)).setBackgroundColor(getResources().getColor(android.R.color.transparent));*/
+    }
+
+    private void getCollections() throws Exception {
+        moltin.collection.listing((JSONObject) null,new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                showPopup(msg.obj.toString());
+                if (msg.what == Constants.RESULT_OK) {
+
+                    ArrayList<CollectionItem> items=new ArrayList<CollectionItem>();
+                    try {
+                        JSONObject json=(JSONObject)msg.obj;
+                        if(json.has("status") && json.getBoolean("status") && json.has("result") && json.getJSONArray("result").length()>0)
+                        {
+                            for(int i=0;i<json.getJSONArray("result").length();i++)
+                            {
+                                items.add(new CollectionItem(json.getJSONArray("result").getJSONObject(i)));
+                            }
+                        }
+
+                        Fragment fragment= CollectionFragment.newInstance(items, "COLLECTIONS", 0);
+                        mContent = fragment;
+                        getFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.collection_content_frame, fragment)
+                                .commit();
+                        menu.showContent();
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onFragmentInteractionForCollectionItem(String itemId) {
+
+        try {
+            Intent intent = new Intent(this, ProductActivity.class);
+            intent.putExtra("ID",itemId);
+            startActivity(intent);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
     public void onClickHandler(View view) {
@@ -35,6 +169,21 @@ public class MainActivity extends ActionBarActivity {
         {
             switch (view.getId())
             {
+                case R.id.btnCollections:
+                    getCollections();
+                    break;
+                case R.id.btnCart:
+                    Intent intent2 = new Intent(this, CartActivity.class);
+                    startActivity(intent2);
+                    break;
+                case R.id.btnPayment:
+                    Intent intent3 = new Intent(this, PaymentActivity.class);
+                    startActivity(intent3);
+                    break;
+
+
+
+                /*
                 case R.id.btnAuth:
                     moltin.authenticate("wf60kt82vtzkjIMslZ1FmDyV8WUWNQlLxUiRVLS4", new Handler.Callback() {
                         @Override
@@ -62,7 +211,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnAddressFind:
-                    moltin.address.find("0", null, new Handler.Callback() {
+                    moltin.address.find("0", (JSONObject) null, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -75,7 +224,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnAddressList:
-                    moltin.address.list("0", null, new Handler.Callback() {
+                    moltin.address.listing("0", (JSONObject) null, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -101,16 +250,14 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnAddressCreate:
-                    JSONObject jsonCustomer = new JSONObject();
-                    jsonCustomer.put("save_as","3");
-                    jsonCustomer.put("first_name","Joe");
-                    jsonCustomer.put("last_name","Black");
-                    jsonCustomer.put("address_1","High Street");
-                    jsonCustomer.put("address_2","Example Village");
-                    jsonCustomer.put("postcode","1000");
-                    jsonCustomer.put("country","GB");
-
-                    moltin.address.create("0", jsonCustomer, new Handler.Callback() {
+                    moltin.address.create("0", new String[][]{
+                            {"save_as","3"},
+                            {"first_name","marko"},
+                            {"last_name","mikolavcic"},
+                            {"address_1","Example Village"},
+                            {"postcode","1000"},
+                            {"country","GB"}
+                    }, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -136,7 +283,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnBrandFind:
-                    moltin.brand.find(null, new Handler.Callback() {
+                    moltin.brand.find((JSONObject) null, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -149,7 +296,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnBrandList:
-                    moltin.brand.list(null, new Handler.Callback() {
+                    moltin.brand.listing((JSONObject) null, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -188,7 +335,8 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnCartInsert:
-                    moltin.cart.insert("0", 2, "mods", new Handler.Callback() {
+
+                    moltin.cart.insert("1",2,new String[][]{{"modifier[1]","2"}}, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -201,10 +349,8 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnCartUpdate:
-                    JSONObject jsonCart1 = new JSONObject();
-                    jsonCart1.put("update", "");
 
-                    moltin.cart.update("0",jsonCart1, new Handler.Callback() {
+                    moltin.cart.update("1",new String[][]{{"price","10"},{"depth","10"},{"height","10"}}, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -282,10 +428,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnCartComplete:
-                    JSONObject jsonCart2 = new JSONObject();
-                    jsonCart2.put("complete", "");
-
-                    moltin.cart.complete(jsonCart2, new Handler.Callback() {
+                    moltin.cart.order(new String[][]{{"shipping", "1"}, {"customer", "my@email.com"},{"gateway","2"},{"ship_to","3"},{"bill_to","3"}}, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -311,7 +454,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnCategoryFind:
-                    moltin.category.find(null, new Handler.Callback() {
+                    moltin.category.find((JSONObject) null, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -324,7 +467,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnCategoryList:
-                    moltin.category.list(null, new Handler.Callback() {
+                    moltin.category.listing((JSONObject) null, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -337,7 +480,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnCategoryTree:
-                    moltin.category.tree(null, new Handler.Callback() {
+                    moltin.category.tree((JSONObject) null, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -363,10 +506,18 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnCheckoutPayment:
-                    JSONObject jsonPayment = new JSONObject();
-                    jsonPayment.put("payment", "");
+                    String[][] data = new String[][]{
+                            {"payment_data[cvv]","123"},
+                            {"payment_data[expiry_month]","1"},
+                            {"payment_data[expiry_year]","2016"},
+                            {"payment_data[issue_number]","123123123123"},
+                            {"payment_data[type]","visa"},
+                            {"ip","123.123.123.123"},
+                            {"cancel_url","www.molt.in/cancel.htm"},
+                            {"return_url","www.molt.in/checkout.htm"},
+                    };
 
-                    moltin.checkout.payment("0", "1", jsonPayment, new Handler.Callback() {
+                    moltin.checkout.payment("0", "1", data, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -392,7 +543,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnCollectionFind:
-                    moltin.collection.find(null, new Handler.Callback() {
+                    moltin.collection.find((JSONObject) null, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -405,7 +556,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnCollectionList:
-                    moltin.collection.list(null, new Handler.Callback() {
+                    moltin.collection.listing((JSONObject) null,new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -444,7 +595,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnCurrencyFind:
-                    moltin.currency.find(null, new Handler.Callback() {
+                    moltin.currency.find((JSONObject)null, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -457,7 +608,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnCurrencyList:
-                    moltin.currency.list(null, new Handler.Callback() {
+                    moltin.currency.listing((JSONObject) null,new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -496,7 +647,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnEntryFind:
-                    moltin.entry.find("flow1", null, new Handler.Callback() {
+                    moltin.entry.find("flow1", (JSONObject) null, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -509,7 +660,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnEntryList:
-                    moltin.entry.list("flow1", null, new Handler.Callback() {
+                    moltin.entry.listing("flow1", (JSONObject) null, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -535,7 +686,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnGatewayList:
-                    moltin.gateway.list(null, new Handler.Callback() {
+                    moltin.gateway.listing(new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -548,6 +699,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnOrderGet:
+
                     moltin.order.get("0", new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
@@ -561,7 +713,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnOrderFind:
-                    moltin.order.find(null, new Handler.Callback() {
+                    moltin.order.find(new String[][]{{"ship_to","1"},{"status","1"}}, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -574,7 +726,8 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnOrderList:
-                    moltin.order.list(null, new Handler.Callback() {
+
+                    moltin.order.listing((JSONObject) null, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -587,10 +740,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnOrderCreate:
-                    JSONObject jsonOrder = new JSONObject();
-                    jsonOrder.put("order","3");
-
-                    moltin.order.create(jsonOrder, new Handler.Callback() {
+                    moltin.order.create(new String[][]{{"ship_to","1"},{"status","1"}}, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -616,7 +766,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnProductFind:
-                    moltin.product.find(null, new Handler.Callback() {
+                    moltin.product.find((JSONObject)null, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -629,7 +779,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnProductList:
-                    moltin.product.list(null, new Handler.Callback() {
+                    moltin.product.listing((JSONObject) null, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -642,7 +792,8 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnProductSearch:
-                    moltin.product.search(null, new Handler.Callback() {
+
+                    moltin.product.search(new String[][]{{"collection","999928496018948116"}}, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -655,7 +806,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnProductFields:
-                    moltin.product.fields("", new Handler.Callback() {
+                    moltin.product.fields("1", new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -707,7 +858,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnShippingList:
-                    moltin.shipping.list(null, new Handler.Callback() {
+                    moltin.shipping.listing(new String[][]{{"slug", "12"}}, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -733,7 +884,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnTaxFind:
-                    moltin.tax.find(null, new Handler.Callback() {
+                    moltin.tax.find(new String[][]{{"rate","20"}}, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -746,7 +897,7 @@ public class MainActivity extends ActionBarActivity {
                     });
                     break;
                 case R.id.btnTaxList:
-                    moltin.tax.list(null, new Handler.Callback() {
+                    moltin.tax.listing((JSONObject) null, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
                             showPopup(msg.obj.toString());
@@ -770,7 +921,7 @@ public class MainActivity extends ActionBarActivity {
                             }
                         }
                     });
-                    break;
+                    break;*/
             }
         }
         catch (Exception e)
@@ -781,35 +932,11 @@ public class MainActivity extends ActionBarActivity {
 
     public void showPopup(String text)
     {
-        AlertDialog.Builder certBuilder = new AlertDialog.Builder(
-                this);
-        final View recipientsLayout = getLayoutInflater().inflate(R.layout.scroll_textview, null);
-        final TextView recipientsTextView = (TextView) recipientsLayout.findViewById(R.id.textPopup);
-        recipientsTextView.setText(text);
-        certBuilder.setView(recipientsLayout);
-        certBuilder.show();
-        // set rest of alertdialog attributes
+        Log.i("POPUP","response " + text);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+    public void onFragmentInteraction(String title) {
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }
