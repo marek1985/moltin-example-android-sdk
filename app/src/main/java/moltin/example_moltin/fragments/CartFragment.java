@@ -4,16 +4,24 @@ package moltin.example_moltin.fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ListFragment;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.util.ArrayList;
+import org.json.JSONObject;
 
-import moltin.example_moltin.activities.CartActivity;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import moltin.android_sdk.Moltin;
+import moltin.android_sdk.utilities.Constants;
 import moltin.example_moltin.data.CartItem;
+import moltin.example_moltin.data.TotalCartItem;
 import moltin.example_moltin.interfaces.CartItemArrayAdapter;
 
 /**
@@ -23,19 +31,23 @@ import moltin.example_moltin.interfaces.CartItemArrayAdapter;
  */
 public class CartFragment extends ListFragment implements AbsListView.OnScrollListener {
 
+    private Context context;
     private ArrayList<CartItem> items;
+    public TotalCartItem cart;
     private String titleEng;
     private CartItemArrayAdapter itemAdapter;
-    private CartActivity cartActivity;
+    //private CollectionActivity cartActivity;
     private int lastPosition=0;
+    private Moltin moltin;
 
     private OnFragmentInteractionListener mListener;
+    private OnFragmentChangeListener mChangeListener;
 
     private boolean loading=false;
 
-    public static CartFragment newInstance(ArrayList<CartItem> posts, String title, int lastPos) {
+    public static CartFragment newInstance(TotalCartItem cart, Context context) {
         CartFragment fragment = new CartFragment();
-        fragment.setArgs(posts, title, lastPos);
+        fragment.setArgs(cart, context);
         return fragment;
     }
 
@@ -49,7 +61,9 @@ public class CartFragment extends ListFragment implements AbsListView.OnScrollLi
 
         try
         {
-            cartActivity = ((CartActivity)getActivity());
+
+
+            //cartActivity = ((CollectionActivity)getActivity());
 
             itemAdapter = new CartItemArrayAdapter(getActivity(), items, titleEng);
             setListAdapter(itemAdapter);
@@ -67,6 +81,8 @@ public class CartFragment extends ListFragment implements AbsListView.OnScrollLi
                     mListener.onFragmentInteractionForCartItem(items.get(i));
                 }
             });
+
+
             //((MainActivity)getActivity()).setButtonsForChannel(titleEng);
 
             try
@@ -115,8 +131,6 @@ public class CartFragment extends ListFragment implements AbsListView.OnScrollLi
 
                 loading=true;
 
-                final String channelName=titleEng;
-
             }
             else if (lv.getFirstVisiblePosition() == 0 &&
                     lv.getChildAt(0).getTop() >= 0)
@@ -127,20 +141,79 @@ public class CartFragment extends ListFragment implements AbsListView.OnScrollLi
                 CartItem item = (CartItem)lv.getAdapter().getItem(1);
 
                 loading=true;
-                final String channelName=titleEng;
-
             }
         }
     }
 
-    public void setArgs(ArrayList<CartItem> posts, String title, int lasPos) {
-        this.items = posts;
-        this.titleEng = title;
-        this.lastPosition = lasPos;
+    public void setArgs(TotalCartItem cartItem, Context ctx) {
+        this.cart=cartItem;
+        this.items = cart.getItems();
+        this.context=ctx;
+        moltin = new Moltin(context);
+        refresh();
     }
 
-    public String getTitleEng() {
-        return titleEng;
+    public void refresh() {
+        try
+        {
+            moltin.cart.contents(new Handler.Callback() {
+                @Override
+                public boolean handleMessage(Message msg) {
+                    if (msg.what == Constants.RESULT_OK) {
+
+                        items = new ArrayList<CartItem>();
+                        try {
+                            JSONObject json = (JSONObject) msg.obj;
+                            if (json.has("status") && json.getBoolean("status") && json.has("result") && !json.isNull("result") && json.getJSONObject("result").has("contents") && !json.getJSONObject("result").isNull("contents")) {
+                                JSONObject jsonContent;
+
+                                if(json.getJSONObject("result").get("contents") instanceof JSONObject)
+                                {
+                                    jsonContent=json.getJSONObject("result").getJSONObject("contents");
+                                    cart=new TotalCartItem(json.getJSONObject("result"));
+                                }
+                                else
+                                {
+                                    jsonContent = new JSONObject();
+                                    cart=new TotalCartItem(new JSONObject());
+                                }
+
+
+                                Iterator i1 = jsonContent.keys();
+
+                                while (i1.hasNext()) {
+                                    String key1 = (String) i1.next();
+                                    if (jsonContent.get(key1) instanceof JSONObject) {
+
+                                        CartItem itemForArray=new CartItem(jsonContent.getJSONObject(key1));
+                                        itemForArray.setItemIdentifier(key1);
+
+                                        items.add(itemForArray);
+                                    }
+                                }
+
+                                cart.setItems(items);
+
+                                itemAdapter = new CartItemArrayAdapter(getActivity(), items, titleEng);
+                                setListAdapter(itemAdapter);
+
+                                mChangeListener.onFragmentChangeForCartItem(cart);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -149,12 +222,20 @@ public class CartFragment extends ListFragment implements AbsListView.OnScrollLi
         try {
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+            throw new ClassCastException(activity.toString() + " must implement OnFragmentInteractionListener");
+        }
+        try {
+            mChangeListener = (OnFragmentChangeListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnFragmentChangeListener");
         }
     }
 
     public interface OnFragmentInteractionListener {
         public void onFragmentInteractionForCartItem(CartItem item);
+    }
+
+    public interface OnFragmentChangeListener {
+        public void onFragmentChangeForCartItem(TotalCartItem cart);
     }
 }

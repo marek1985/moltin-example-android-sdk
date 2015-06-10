@@ -26,21 +26,25 @@ import java.util.ArrayList;
 import moltin.android_sdk.Moltin;
 import moltin.android_sdk.utilities.Constants;
 import moltin.example_moltin.R;
+import moltin.example_moltin.data.CartItem;
 import moltin.example_moltin.data.CollectionItem;
+import moltin.example_moltin.data.TotalCartItem;
+import moltin.example_moltin.fragments.CartFragment;
 import moltin.example_moltin.fragments.CollectionFragment;
-import moltin.example_moltin.fragments.MenuFragment;
 
 
-public class CollectionActivity extends SlidingFragmentActivity implements MenuFragment.OnFragmentInteractionListener, CollectionFragment.OnCollectionFragmentInteractionListener {
+public class CollectionActivity extends SlidingFragmentActivity implements CartFragment.OnFragmentChangeListener, CartFragment.OnFragmentInteractionListener, CollectionFragment.OnCollectionFragmentInteractionListener {
     private Moltin moltin;
     private Context context;
     private ArrayList<CollectionItem> items;
+    private ArrayList<CartItem> itemsForCart;
+    private TotalCartItem cart;
     public static CollectionActivity instance = null;
 
     private ActionBar actionBar;
     private SlidingMenu menu;
     private android.app.Fragment mContent;
-    private MenuFragment menuFragment;
+    private CartFragment menuFragment;
 
     private Point screenSize;
     private int position=0;
@@ -83,11 +87,11 @@ public class CollectionActivity extends SlidingFragmentActivity implements MenuF
         }
 
         menu = getSlidingMenu();
-        menu.setShadowWidth(0);
-        menu.setBehindWidth(200);
+        menu.setShadowWidth(20);
+        menu.setBehindWidth(getListviewWidth()-50);
         //menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
         menu.setTouchModeBehind(SlidingMenu.TOUCHMODE_FULLSCREEN);
-        menu.setMode(SlidingMenu.LEFT);
+        menu.setMode(SlidingMenu.RIGHT);
         menu.setFadeEnabled(false);
         menu.setBehindScrollScale(0.5f);
         setSlidingActionBarEnabled(true);
@@ -106,14 +110,73 @@ public class CollectionActivity extends SlidingFragmentActivity implements MenuF
                 .replace(R.id.container, mContent)
                 .commit();
 
-        setBehindContentView(R.layout.menu_frame);
-        menuFragment = MenuFragment.newInstance();
+        itemsForCart=new ArrayList<CartItem>();
+        cart=new TotalCartItem(new JSONObject());
+        cart.setItems(itemsForCart);
+
+        setBehindContentView(R.layout.cart_content_frame);
+        menuFragment = CartFragment.newInstance(cart, getApplicationContext());
         getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.menu_frame, menuFragment)
+                .replace(R.id.cart_content_frame, menuFragment)
                 .commit();
 
+        /*try
+        {
+            moltin.cart.contents(new Handler.Callback() {
+                @Override
+                public boolean handleMessage(Message msg) {
+                    if (msg.what == Constants.RESULT_OK) {
+
+                        ArrayList<CartItem> items = new ArrayList<CartItem>();
+                        try {
+                            JSONObject json = (JSONObject) msg.obj;
+                            if (json.has("status") && json.getBoolean("status") && json.has("result") && !json.isNull("result") && json.getJSONObject("result").has("contents") && !json.getJSONObject("result").isNull("contents")) {
+                                JSONObject jsonContent=json.getJSONObject("result").getJSONObject("contents");
+
+                                cart=new TotalCartItem(json.getJSONObject("result"));
+
+                                Iterator i1 = jsonContent.keys();
+
+                                while (i1.hasNext()) {
+                                    String key1 = (String) i1.next();
+                                    if (jsonContent.get(key1) instanceof JSONObject) {
+
+                                        CartItem itemForArray=new CartItem(jsonContent.getJSONObject(key1));
+                                        itemForArray.setItemIdentifier(key1);
+
+                                        items.add(itemForArray);
+                                    }
+                                }
+
+                                cart.setItems(items);
+
+                                ((TextView)findViewById(R.id.txtTotalPrice)).setText(cart.getItemTotalPrice());
+                            }
+
+                            menuFragment = CartFragment.newInstance(itemsForCart);
+                            getFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.cart_content_frame, menuFragment)
+                                    .commit();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+*/
         ((TextView)findViewById(R.id.txtActivityTitle)).setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Regular.otf"));
+        ((TextView)findViewById(R.id.txtActivityTitleCart)).setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Regular.otf"));
     }
 
     public void setInitialPosition()
@@ -184,12 +247,75 @@ public class CollectionActivity extends SlidingFragmentActivity implements MenuF
         {
             switch (view.getId())
             {
+                case R.id.btnPlus:
+                    ((LinearLayout)findViewById(R.id.layLoading)).setVisibility(View.VISIBLE);
+                    moltin.cart.update(menuFragment.cart.getItems().get((int)view.getTag()).getItemIdentifier(),new String[][]{{"quantity",""+(menuFragment.cart.getItems().get((int)view.getTag()).getItemQuantity()+1)}}, new Handler.Callback() {//"wf60kt82vtzkjIMslZ1FmDyV8WUWNQlLxUiRVLS4", new Handler.Callback() {
+                        @Override
+                        public boolean handleMessage(Message msg) {
+                            ((LinearLayout)findViewById(R.id.layLoading)).setVisibility(View.GONE);
+                            menuFragment.refresh();
+                            if (msg.what == Constants.RESULT_OK) {
+                                try {
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                    });
+                    break;
+                case R.id.btnMinus:
+                    ((LinearLayout)findViewById(R.id.layLoading)).setVisibility(View.VISIBLE);
+                    moltin.cart.update(menuFragment.cart.getItems().get((int)view.getTag()).getItemIdentifier(),new String[][]{{"quantity",""+(menuFragment.cart.getItems().get((int)view.getTag()).getItemQuantity()-1)}}, new Handler.Callback() {//"wf60kt82vtzkjIMslZ1FmDyV8WUWNQlLxUiRVLS4", new Handler.Callback() {
+                        @Override
+                        public boolean handleMessage(Message msg) {
+                            ((LinearLayout)findViewById(R.id.layLoading)).setVisibility(View.GONE);
+                            menuFragment.refresh();
+                            if (msg.what == Constants.RESULT_OK) {
+                                try {
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                    });
+                    break;
+                case R.id.btnDelete:
+                    ((LinearLayout)findViewById(R.id.layLoading)).setVisibility(View.VISIBLE);
+                    moltin.cart.remove(menuFragment.cart.getItems().get((int)view.getTag()).getItemIdentifier(), new Handler.Callback() {//"wf60kt82vtzkjIMslZ1FmDyV8WUWNQlLxUiRVLS4", new Handler.Callback() {
+                        @Override
+                        public boolean handleMessage(Message msg) {
+                            ((LinearLayout)findViewById(R.id.layLoading)).setVisibility(View.GONE);
+                            menuFragment.refresh();
+                            if (msg.what == Constants.RESULT_OK) {
+                                try {
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                    });
+                    break;
+                case R.id.btnCheckout:
+                    Intent intent = new Intent(this, ShippingActivity.class);
+                    startActivity(intent);
+                    break;
                 case R.id.btnMenu:
                     onHomeClicked();
                     break;
                 case R.id.btnCart:
-                    Intent intent2 = new Intent(this, CartActivity.class);
-                    startActivity(intent2);
+                    onHomeClicked();
                     break;
             }
         }
@@ -244,11 +370,6 @@ public class CollectionActivity extends SlidingFragmentActivity implements MenuF
     }
 
     @Override
-    public void onFragmentInteraction(String title) {
-
-    }
-
-    @Override
     public void onFragmentInteractionForCollectionItem(String itemId) {
 
     }
@@ -264,6 +385,29 @@ public class CollectionActivity extends SlidingFragmentActivity implements MenuF
             e.printStackTrace();
         }
         super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        try
+        {
+            menuFragment.refresh();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onFragmentInteractionForCartItem(CartItem item) {
+
+    }
+
+    @Override
+    public void onFragmentChangeForCartItem(TotalCartItem cart) {
+        ((TextView)findViewById(R.id.txtTotalPrice)).setText(cart.getItemTotalPrice());
     }
 }
 /*public class CollectionActivity extends SlidingFragmentActivity implements CollectionFragment.OnFragmentInteractionListener,MenuFragment.OnFragmentInteractionListener{

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical" android:layout_width="match_parent"
-android:layout_height="match_parent">
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -40,9 +40,10 @@ android:layout_height="match_parent">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ITEMS"
+                android:text="COLLECTIONS"
                 android:id="@+id/txtActivityTitle"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:visibility="gone" />
         </LinearLayout>
 
         <LinearLayout
@@ -59,20 +60,20 @@ android:layout_height="match_parent">
                 android:onClick="onClickHandler"
                 android:src="@drawable/ic_cart"
                 android:scaleType="fitXY"
-                android:clickable="true" />
+                android:clickable="true"
+                android:visibility="gone" />
         </LinearLayout>
 
     </LinearLayout>
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/container"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        tools:context="vee.android.sample.recyclerview.MainActivity"
-        tools:ignore="MergeRootFrame"
         android:layout_weight="10"
-        android:background="@color/gray_dark" />
+        android:background="@color/gray_dark">
+
+    </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"

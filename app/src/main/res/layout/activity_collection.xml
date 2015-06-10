@@ -26,7 +26,8 @@ android:layout_height="match_parent">
                 android:onClick="onClickHandler"
                 android:src="@drawable/ic_menu"
                 android:scaleType="fitXY"
-                android:clickable="true" />
+                android:clickable="true"
+                android:visibility="gone" />
         </LinearLayout>
 
         <LinearLayout

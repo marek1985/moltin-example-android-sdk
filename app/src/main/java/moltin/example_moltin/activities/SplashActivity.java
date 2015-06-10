@@ -4,23 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import moltin.android_sdk.Moltin;
-import moltin.android_sdk.utilities.Constants;
 import moltin.example_moltin.R;
-import moltin.example_moltin.utils.DownloadImageTask;
 
 public class SplashActivity extends Activity {
 
@@ -45,10 +33,6 @@ public class SplashActivity extends Activity {
                     Intent intent = new Intent(this, CollectionActivity.class);
                     startActivity(intent);
                     finish();
-                    break;
-                case R.id.btnCart:
-                    Intent intent2 = new Intent(this, CartActivity.class);
-                    startActivity(intent2);
                     break;
             }
         }

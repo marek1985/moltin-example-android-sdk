@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
@@ -44,6 +45,10 @@ public class CartItemArrayAdapter extends ArrayAdapter<CartItem> {
                 viewHolder.price = (TextView) convertView.findViewById(R.id.txtPrice);
                 viewHolder.quantity = (TextView) convertView.findViewById(R.id.txtQuantity);
                 viewHolder.image = (ImageView) convertView.findViewById(R.id.imgItem);
+                viewHolder.btnPlus = (LinearLayout) convertView.findViewById(R.id.btnPlus);
+                viewHolder.btnMinus = (LinearLayout) convertView.findViewById(R.id.btnMinus);
+                viewHolder.btnDelete = (LinearLayout) convertView.findViewById(R.id.btnDelete);
+
                 convertView.setTag(viewHolder);
             } else {
                 try
@@ -59,6 +64,11 @@ public class CartItemArrayAdapter extends ArrayAdapter<CartItem> {
                         viewHolder.price = (TextView) convertView.findViewById(R.id.txtPrice);
                         viewHolder.quantity = (TextView) convertView.findViewById(R.id.txtQuantity);
                         viewHolder.image = (ImageView) convertView.findViewById(R.id.imgItem);
+                        viewHolder.btnPlus = (LinearLayout) convertView.findViewById(R.id.btnPlus);
+                        viewHolder.btnMinus = (LinearLayout) convertView.findViewById(R.id.btnMinus);
+                        viewHolder.btnDelete = (LinearLayout) convertView.findViewById(R.id.btnDelete);
+
+
                         convertView.setTag(viewHolder);
                     }
                 }
@@ -75,6 +85,10 @@ public class CartItemArrayAdapter extends ArrayAdapter<CartItem> {
                 viewHolder.title.setText(item.getItemName());
                 viewHolder.price.setText(item.getItemPrice());
                 viewHolder.quantity.setText("" + item.getItemQuantity());
+
+                viewHolder.btnPlus.setTag(position);
+                viewHolder.btnMinus.setTag(position);
+                viewHolder.btnDelete.setTag(position);
 
                 if(item.getItemPictureUrl()!=null && item.getItemPictureUrl().length>0);
                 {
@@ -110,5 +124,8 @@ public class CartItemArrayAdapter extends ArrayAdapter<CartItem> {
         TextView price;
         TextView quantity;
         ImageView image;
+        LinearLayout btnPlus;
+        LinearLayout btnMinus;
+        LinearLayout btnDelete;
     }
 }
