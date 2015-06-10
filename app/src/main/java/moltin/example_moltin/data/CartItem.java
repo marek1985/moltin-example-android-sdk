@@ -5,14 +5,14 @@ import org.json.JSONObject;
 
 public class CartItem {
 
+    private String itemIdentifier;
     private String itemId;
-    private String itemPictureUrl;
     private String itemName;
-    private String itemDescription;
     private String itemSlug;
-    private String itemBrand;
     private String itemPrice;
-
+    private String itemTotalPrice;
+    private Integer itemQuantity;
+    private String[] itemPictureUrl;
     public CartItem()
     {
 
@@ -28,46 +28,49 @@ public class CartItem {
             if(json.has("title") && !json.isNull("title"))
                 itemName=json.getString("title");
 
-            if(json.has("description") && !json.isNull("description"))
-                itemDescription=json.getString("description");
-
             if(json.has("slug") && !json.isNull("slug"))
                 itemSlug=json.getString("slug");
+
+            if(json.has("pricing") && !json.isNull("pricing") && json.getJSONObject("pricing").has("formatted"))
+                itemPrice=json.getJSONObject("pricing").getJSONObject("formatted").getString("with_tax");
+
+            if(json.has("totals") && !json.isNull("totals") && json.getJSONObject("totals").has("pre_discount"))
+                itemTotalPrice=json.getJSONObject("totals").getJSONObject("pre_discount").getJSONObject("formatted").getString("with_tax");
+
+            if(json.has("quantity") && !json.isNull("quantity"))
+                itemQuantity=json.getInt("quantity");
 
             if(json.has("images") && !json.isNull("images") && json.get("images") instanceof JSONArray)
             {
                 if(json.getJSONArray("images").length()>0 && json.getJSONArray("images").getJSONObject(0).has("url") && json.getJSONArray("images").getJSONObject(0).getJSONObject("url").has("http"))
-                    itemPictureUrl=json.getJSONArray("images").getJSONObject(0).getJSONObject("url").getString("http");
+                {
+                    itemPictureUrl = new String[json.getJSONArray("images").length()];
+                    for(int i=0;i<json.getJSONArray("images").length();i++)
+                    {
+                        itemPictureUrl[i]=json.getJSONArray("images").getJSONObject(i).getJSONObject("url").getString("http");
+                    }
+                }
             }
-
-            if(json.has("brand") && !json.isNull("brand") && json.getJSONObject("brand").has("value"))
-                itemBrand=json.getJSONObject("brand").getString("value");
-
-            if(json.has("price") && !json.isNull("price") && json.getJSONObject("price").has("data"))
-                itemPrice=json.getJSONObject("price").getJSONObject("data").getJSONObject("formatted").getString("with_tax");
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
-
     }
 
     public CartItem(String itemId,
-                    String itemPictureUrl,
                     String itemName,
-                    String itemDescription,
                     String itemSlug,
-                    String itemBrand,
-                    String itemPrice)
+                    String itemPrice,
+                    String itemTotalPrice,
+                    Integer itemQuantity)
     {
         this.itemId=itemId;
-        this.itemPictureUrl=itemPictureUrl;
         this.itemName=itemName;
-        this.itemDescription=itemDescription;
         this.itemSlug=itemSlug;
-        this.itemBrand=itemBrand;
         this.itemPrice=itemPrice;
+        this.itemTotalPrice=itemTotalPrice;
+        this.itemQuantity=itemQuantity;
     }
 
     public String getItemId() {
@@ -78,33 +81,12 @@ public class CartItem {
         this.itemId = itemId;
     }
 
-    public String getItemPictureUrl() {
-        return itemPictureUrl;
-    }
-
-    public void setItemPictureUrl(String itemPictureUrl) {
-        this.itemPictureUrl = itemPictureUrl;
-    }
-
     public String getItemName() {
         return itemName;
     }
 
     public void setItemName(String itemName) {
         this.itemName = itemName;
-    }
-
-    public String getShortItemDescription() {
-        if(itemDescription.length()>100) return itemDescription.substring(0,100) + "...";
-        else return itemDescription;
-    }
-
-    public String getItemDescription() {
-        return itemDescription;
-    }
-
-    public void setItemDescription(String itemDescription) {
-        this.itemDescription = itemDescription;
     }
 
     public String getItemSlug() {
@@ -115,19 +97,43 @@ public class CartItem {
         this.itemSlug = itemSlug;
     }
 
-    public String getItemBrand() {
-        return (itemBrand==null || itemBrand.equals("null") ? "" : "by: " + itemBrand);
-    }
-
-    public void setItemBrand(String itemBrand) {
-        this.itemBrand = itemBrand;
-    }
-
     public String getItemPrice() {
         return (itemPrice==null || itemPrice.equals("null") ? "" : itemPrice);
     }
 
     public void setItemPrice(String itemPrice) {
         this.itemPrice = itemPrice;
+    }
+
+    public String getItemTotalPrice() {
+        return itemTotalPrice;
+    }
+
+    public void setItemTotalPrice(String itemTotalPrice) {
+        this.itemTotalPrice = itemTotalPrice;
+    }
+
+    public Integer getItemQuantity() {
+        return itemQuantity;
+    }
+
+    public void setItemQuantity(Integer itemQuantity) {
+        this.itemQuantity = itemQuantity;
+    }
+
+    public String getItemIdentifier() {
+        return itemIdentifier;
+    }
+
+    public void setItemIdentifier(String itemIdentifier) {
+        this.itemIdentifier = itemIdentifier;
+    }
+
+    public String[] getItemPictureUrl() {
+        return itemPictureUrl;
+    }
+
+    public void setItemPictureUrl(String[] itemPictureUrl) {
+        this.itemPictureUrl = itemPictureUrl;
     }
 }

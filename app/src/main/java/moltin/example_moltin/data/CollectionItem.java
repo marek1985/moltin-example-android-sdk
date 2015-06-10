@@ -6,7 +6,7 @@ import org.json.JSONObject;
 public class CollectionItem {
 
     private String itemId;
-    private String itemPictureUrl;
+    private String[] itemPictureUrl;
     private String itemName;
     private String itemDescription;
     private String itemSlug;
@@ -35,7 +35,13 @@ public class CollectionItem {
             if(json.has("images") && !json.isNull("images") && json.get("images") instanceof JSONArray)
             {
                 if(json.getJSONArray("images").length()>0 && json.getJSONArray("images").getJSONObject(0).has("url") && json.getJSONArray("images").getJSONObject(0).getJSONObject("url").has("http"))
-                    itemPictureUrl=json.getJSONArray("images").getJSONObject(0).getJSONObject("url").getString("http");
+                {
+                    itemPictureUrl = new String[json.getJSONArray("images").length()];
+                    for(int i=0;i<json.getJSONArray("images").length();i++)
+                    {
+                        itemPictureUrl[i]=json.getJSONArray("images").getJSONObject(i).getJSONObject("url").getString("http");
+                    }
+                }
             }
         }
         catch (Exception e)
@@ -46,7 +52,7 @@ public class CollectionItem {
     }
 
     public CollectionItem(String itemId,
-                          String itemPictureUrl,
+                          String[] itemPictureUrl,
                           String itemName,
                           String itemDescription,
                           String itemSlug)
@@ -66,11 +72,11 @@ public class CollectionItem {
         this.itemId = itemId;
     }
 
-    public String getItemPictureUrl() {
+    public String[] getItemPictureUrl() {
         return itemPictureUrl;
     }
 
-    public void setItemPictureUrl(String itemPictureUrl) {
+    public void setItemPictureUrl(String[] itemPictureUrl) {
         this.itemPictureUrl = itemPictureUrl;
     }
 
@@ -83,7 +89,7 @@ public class CollectionItem {
     }
 
     public String getShortItemDescription() {
-        if(itemDescription.length()>100) return itemDescription.substring(0,100) + "...";
+        if(itemDescription!=null && itemDescription.length()>100) return itemDescription.substring(0,100) + "...";
         else return itemDescription;
     }
 

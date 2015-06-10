@@ -6,12 +6,14 @@ import org.json.JSONObject;
 public class ProductItem {
 
     private String itemId;
-    private String itemPictureUrl;
+    private String[] itemPictureUrl;
     private String itemName;
     private String itemDescription;
     private String itemSlug;
     private String itemBrand;
     private String itemPrice;
+    private String itemModifier;
+    private String itemCollection;
 
     public ProductItem()
     {
@@ -37,7 +39,13 @@ public class ProductItem {
             if(json.has("images") && !json.isNull("images") && json.get("images") instanceof JSONArray)
             {
                 if(json.getJSONArray("images").length()>0 && json.getJSONArray("images").getJSONObject(0).has("url") && json.getJSONArray("images").getJSONObject(0).getJSONObject("url").has("http"))
-                    itemPictureUrl=json.getJSONArray("images").getJSONObject(0).getJSONObject("url").getString("http");
+                {
+                    itemPictureUrl = new String[json.getJSONArray("images").length()];
+                    for(int i=0;i<json.getJSONArray("images").length();i++)
+                    {
+                        itemPictureUrl[i]=json.getJSONArray("images").getJSONObject(i).getJSONObject("url").getString("http");
+                    }
+                }
             }
 
             if(json.has("brand") && !json.isNull("brand") && json.getJSONObject("brand").has("value"))
@@ -45,6 +53,18 @@ public class ProductItem {
 
             if(json.has("price") && !json.isNull("price") && json.getJSONObject("price").has("data"))
                 itemPrice=json.getJSONObject("price").getJSONObject("data").getJSONObject("formatted").getString("with_tax");
+
+            if(json.has("collection") && !json.isNull("collection") && json.getJSONObject("collection").has("value"))
+                itemCollection=json.getJSONObject("collection").getString("value");
+
+            if(json.has("modifiers") && !json.isNull("modifiers"))
+            {
+                if(json.get("modifiers") instanceof JSONObject)
+                    itemModifier = json.getJSONObject("modifiers").toString();
+                else if(json.get("modifiers") instanceof JSONArray)
+                    itemModifier = json.getJSONArray("modifiers").toString();
+            }
+
         }
         catch (Exception e)
         {
@@ -54,7 +74,7 @@ public class ProductItem {
     }
 
     public ProductItem(String itemId,
-                       String itemPictureUrl,
+                       String[] itemPictureUrl,
                        String itemName,
                        String itemDescription,
                        String itemSlug,
@@ -78,11 +98,23 @@ public class ProductItem {
         this.itemId = itemId;
     }
 
-    public String getItemPictureUrl() {
+    public String[] getItemPictureUrl() {
         return itemPictureUrl;
     }
 
-    public void setItemPictureUrl(String itemPictureUrl) {
+    public String getItemPictureUrls() {
+
+        String urls="";
+        for(int i=0;itemPictureUrl!=null && i<itemPictureUrl.length;i++)
+        {
+            if(i>0)
+                urls += "\"";
+            urls += itemPictureUrl[i];
+        }
+        return urls;
+    }
+
+    public void setItemPictureUrl(String[] itemPictureUrl) {
         this.itemPictureUrl = itemPictureUrl;
     }
 
@@ -95,7 +127,7 @@ public class ProductItem {
     }
 
     public String getShortItemDescription() {
-        if(itemDescription.length()>100) return itemDescription.substring(0,100) + "...";
+        if(itemDescription!=null && itemDescription.length()>100) return itemDescription.substring(0,100) + "...";
         else return itemDescription;
     }
 
@@ -129,5 +161,21 @@ public class ProductItem {
 
     public void setItemPrice(String itemPrice) {
         this.itemPrice = itemPrice;
+    }
+
+    public String getItemModifier() {
+        return itemModifier;
+    }
+
+    public void setItemModifier(String itemModifier) {
+        this.itemModifier = itemModifier;
+    }
+
+    public String getItemCollection() {
+        return itemCollection;
+    }
+
+    public void setItemCollection(String itemCollection) {
+        this.itemCollection = itemCollection;
     }
 }

@@ -4,9 +4,8 @@
     android:layout_height="match_parent">
 
     <FrameLayout
-        android:id="@+id/product_content_frame"
+        android:id="@+id/collection_content_frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/gradient_blue"/>
+        android:layout_height="match_parent"/>
 
 </RelativeLayout>

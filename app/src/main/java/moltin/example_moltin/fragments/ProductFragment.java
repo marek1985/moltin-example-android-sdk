@@ -3,158 +3,123 @@ package moltin.example_moltin.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.ListFragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
+import moltin.example_moltin.R;
 import moltin.example_moltin.activities.ProductActivity;
 import moltin.example_moltin.data.ProductItem;
-import moltin.example_moltin.interfaces.ProductItemArrayAdapter;
+import moltin.example_moltin.interfaces.CustomRecyclerView;
+import moltin.example_moltin.interfaces.ProductListAdapterHolder;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ProductFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProductFragment extends ListFragment implements AbsListView.OnScrollListener {
+public class ProductFragment extends android.app.Fragment {
+    FragmentActivity mActivity;
+    CustomRecyclerView mRecyclerView;
+    ProductListAdapterHolder adapter;
+    LinearLayoutManager layoutManager;
+    private OnProductFragmentInteractionListener mListener;
 
     private ArrayList<ProductItem> items;
-    private String titleEng;
-    private ProductItemArrayAdapter itemAdapter;
-    private ProductActivity productActivity;
-    private int lastPosition=0;
+    private int width;
+    public View rootView;
 
-    private OnFragmentInteractionListener mListener;
-
-    private boolean loading=false;
-
-    public static ProductFragment newInstance(ArrayList<ProductItem> posts, String title, int lastPos) {
+    public static ProductFragment newInstance(ArrayList<ProductItem> posts, int width) {
         ProductFragment fragment = new ProductFragment();
-        fragment.setArgs(posts, title, lastPos);
+        fragment.setArgs(posts, width);
         return fragment;
     }
 
-    public ProductFragment() {
-        // Required empty public constructor
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        try
-        {
-            productActivity = ((ProductActivity)getActivity());
-
-            itemAdapter = new ProductItemArrayAdapter(getActivity(), items, titleEng);
-            setListAdapter(itemAdapter);
-            getListView().setOnScrollListener(this);/*new EndlessScrollListener() {
-                @Override
-                public void onLoadMore(int page, int totalItemsCount) {
-                    customLoadMoreDataFromApi(page);
-                    // or customLoadMoreDataFromApi(totalItemsCount);
-                    Log.i("END SCROLL","$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-                }
-            });*/
-            getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    mListener.onFragmentInteractionForProductItem(items.get(i));
-                }
-            });
-            //((MainActivity)getActivity()).setButtonsForChannel(titleEng);
-
-            try
-            {
-                getListView().setSelection(lastPosition);
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    final static int SCROLL_STATE_IDLE=0;
-    int currentFirstVisibleItem=0;
-    int currentVisibleItemCount=0;
-    int currentScrollState=SCROLL_STATE_IDLE;
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        this.currentFirstVisibleItem = firstVisibleItem;
-        this.currentVisibleItemCount = visibleItemCount;
-    }
-
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-        this.currentScrollState = scrollState;
-        this.isScrollCompleted();
-    }
-
-    private void isScrollCompleted() {
-
-        lastPosition = currentFirstVisibleItem;
-
-        if (!loading && this.currentVisibleItemCount > 0 && this.currentScrollState == SCROLL_STATE_IDLE) {
-
-            final ListView lv=getListView();
-            if (lv.getLastVisiblePosition() == lv.getAdapter().getCount() -1 &&
-                    lv.getChildAt(lv.getChildCount() - 1).getBottom() <= lv.getHeight())
-            {
-                final int position = lv.getLastVisiblePosition();
-                ProductItem item = (ProductItem)lv.getAdapter().getItem(lv.getChildCount() - 1);
-
-                loading=true;
-
-                final String channelName=titleEng;
-
-            }
-            else if (lv.getFirstVisiblePosition() == 0 &&
-                    lv.getChildAt(0).getTop() >= 0)
-            {
-                if(lv  != null && lv.getAdapter() != null && lv.getAdapter().getCount()<=1)
-                    return;
-
-                ProductItem item = (ProductItem)lv.getAdapter().getItem(1);
-
-                loading=true;
-                final String channelName=titleEng;
-
-            }
-        }
-    }
-
-    public void setArgs(ArrayList<ProductItem> posts, String title, int lasPos) {
+    public void setArgs(ArrayList<ProductItem> posts, int width) {
         this.items = posts;
-        this.titleEng = title;
-        this.lastPosition = lasPos;
+        this.width = width;
     }
 
-    public String getTitleEng() {
-        return titleEng;
+    public ProductFragment() {
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        mActivity = (FragmentActivity) activity;
+        setRetainInstance(true);
+
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            mListener = (OnProductFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
     }
 
-    public interface OnFragmentInteractionListener {
-        public void onFragmentInteractionForProductItem(ProductItem item);
+    @Override
+    public View onCreateView(LayoutInflater inflater , ViewGroup container , Bundle savedInstanceState) {
+        rootView = inflater.inflate(R.layout.fragment_product, container, false);
+
+        mRecyclerView = (CustomRecyclerView) rootView.findViewById(R.id.recycler_view);
+
+        adapter = new ProductListAdapterHolder(mActivity, items, width);
+
+        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                try
+                {
+
+                    ProductActivity act= ProductActivity.instance;
+                    if(act!=null)
+                        act.setPosition(layoutManager.findFirstVisibleItemPosition());
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view , Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+
+        mRecyclerView.setWidth(width);
+        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        adapter.SetOnItemClickListener(new ProductListAdapterHolder.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(View v, int position) {
+                mListener.onFragmentInteractionForProductItem(items.get(position));
+            }
+        });
+
+    }
+
+
+    public interface OnProductFragmentInteractionListener {
+        public void onFragmentInteractionForProductItem(ProductItem itemId);
     }
 }

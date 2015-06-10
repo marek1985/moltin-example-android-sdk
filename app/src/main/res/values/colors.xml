@@ -4,4 +4,12 @@
     <color name="BLUE_DARK">#000022</color>
     <color name="WHITE">#ffffff</color>
     <color name="BLACK">#000000</color>
+
+    <color name="violet_medium">#A478BF</color>
+    <color name="violet_light">#B9A6CB</color>
+    <color name="violet_dark">#5F4168</color>
+
+    <color name="gray_medium">#556871</color>
+    <color name="gray_light">#a5a8c1</color>
+    <color name="gray_dark">#27393F</color>
 </resources>

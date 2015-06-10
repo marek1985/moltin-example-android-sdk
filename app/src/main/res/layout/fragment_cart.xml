@@ -7,7 +7,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:cacheColorHint="@android:color/darker_gray"
-        android:background="@drawable/gradient_blue" />
+        android:cacheColorHint="@android:color/darker_gray" />
 
 </FrameLayout>

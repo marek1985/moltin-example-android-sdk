@@ -3,12 +3,18 @@ package moltin.example_moltin.activities;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
-import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
@@ -26,7 +32,279 @@ import moltin.example_moltin.fragments.MenuFragment;
 import moltin.example_moltin.fragments.ProductFragment;
 
 
-public class ProductActivity extends SlidingFragmentActivity implements ProductFragment.OnFragmentInteractionListener,MenuFragment.OnFragmentInteractionListener{
+public class ProductActivity extends SlidingFragmentActivity implements MenuFragment.OnFragmentInteractionListener, ProductFragment.OnProductFragmentInteractionListener {
+    private Moltin moltin;
+    private Context context;
+    private ArrayList<ProductItem> items;
+    public static ProductActivity instance = null;
+
+    private ActionBar actionBar;
+    private SlidingMenu menu;
+    private android.app.Fragment mContent;
+    private MenuFragment menuFragment;
+
+    private Point screenSize;
+    private int position=0;
+
+    private LinearLayout layIndex;
+
+    private String itemId="";
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        context=this;
+
+        instance = this;
+
+        itemId = getIntent().getExtras().getString("ID");
+
+        moltin = new Moltin(this);
+        try
+        {
+            moltin.authenticate("umRG34nxZVGIuCSPfYf8biBSvtABgTR8GMUtflyE", new Handler.Callback() {//"wf60kt82vtzkjIMslZ1FmDyV8WUWNQlLxUiRVLS4", new Handler.Callback() {
+                @Override
+                public boolean handleMessage(Message msg) {
+                    if (msg.what == Constants.RESULT_OK) {
+
+                        try {
+                            getProducts();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        menu = getSlidingMenu();
+        menu.setShadowWidth(0);
+        menu.setBehindWidth(200);
+        //menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+        menu.setTouchModeBehind(SlidingMenu.TOUCHMODE_FULLSCREEN);
+        menu.setMode(SlidingMenu.LEFT);
+        menu.setFadeEnabled(false);
+        menu.setBehindScrollScale(0.5f);
+        setSlidingActionBarEnabled(true);
+
+        items=new ArrayList<ProductItem>();
+
+        if (savedInstanceState != null)
+            mContent = getFragmentManager().getFragment(savedInstanceState, "mContent");
+        if (mContent == null) {
+            mContent = ProductFragment.newInstance(items,getListviewWidth());
+        }
+
+        setContentView(R.layout.activity_product);
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, mContent)
+                .commit();
+
+        setBehindContentView(R.layout.menu_frame);
+        menuFragment = MenuFragment.newInstance();
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.menu_frame, menuFragment)
+                .commit();
+
+        ((TextView)findViewById(R.id.txtActivityTitle)).setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Regular.otf"));
+    }
+
+    public void setInitialPosition()
+    {
+        layIndex = (LinearLayout)findViewById(R.id.layIndex);
+
+        if(((LinearLayout) layIndex).getChildCount() > 0)
+            ((LinearLayout) layIndex).removeAllViews();
+
+        for(int i=0;i<items.size();i++)
+        {
+            ImageView img=new ImageView(this);
+            if(position==i)
+                img.setImageDrawable(getResources().getDrawable(R.drawable.circle_active));
+            else
+                img.setImageDrawable(getResources().getDrawable(R.drawable.circle_inactive));
+
+            ViewGroup.MarginLayoutParams params = new ViewGroup.MarginLayoutParams(
+                    30,
+                    30);
+            params.leftMargin = 5;
+            params.rightMargin = 5;
+            params.topMargin = 5;
+
+            img.setLayoutParams(params);
+            layIndex.addView(img);
+        }
+    }
+
+    public void setPosition(int newPosition)
+    {
+        if(newPosition!=position)
+        {
+            if(((LinearLayout) layIndex).getChildCount() > 0)
+            {
+                ((ImageView)layIndex.getChildAt(position)).setImageDrawable(getResources().getDrawable(R.drawable.circle_inactive));
+                ((ImageView)layIndex.getChildAt(newPosition)).setImageDrawable(getResources().getDrawable(R.drawable.circle_active));
+                position=newPosition;
+            }
+        }
+    }
+
+    private int getListviewWidth() {
+        Display display = getWindowManager().getDefaultDisplay();
+        screenSize = new Point();
+        display.getSize(screenSize);
+
+        return screenSize.x;
+    }
+
+    public void onItemClickHandler(View view) {
+
+        try
+        {
+            ProductItem item= items.get(position);
+            Intent intent = new Intent(this, DetailActivity.class);
+            intent.putExtra("ID",item.getItemId());
+            intent.putExtra("TITLE",item.getItemName());
+            intent.putExtra("DESCRIPTION",item.getItemDescription());
+            intent.putExtra("PICTURE",item.getItemPictureUrls());
+            intent.putExtra("BRAND",item.getItemBrand());
+            intent.putExtra("PRICE",item.getItemPrice());
+            intent.putExtra("MODIFIER",item.getItemModifier());
+            intent.putExtra("COLLECTION",item.getItemCollection());
+            startActivity(intent);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void onClickHandler(View view) {
+
+        try
+        {
+            switch (view.getId())
+            {
+                case R.id.btnMenu:
+                    onHomeClicked();
+                    break;
+                case R.id.btnCart:
+                    Intent intent2 = new Intent(this, CartActivity.class);
+                    startActivity(intent2);
+                    break;
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void onHomeClicked() {
+        toggle();
+    }
+
+    private void getProducts() throws Exception {
+        moltin.product.search(new String[][]{{"collection", itemId}}, new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                if (msg.what == Constants.RESULT_OK) {
+
+                    items = new ArrayList<ProductItem>();
+                    try {
+                        JSONObject json = (JSONObject) msg.obj;
+                        if (json.has("status") && json.getBoolean("status") && json.has("result") && json.getJSONArray("result").length() > 0) {
+                            for (int i = 0; i < json.getJSONArray("result").length(); i++) {
+                                items.add(new ProductItem(json.getJSONArray("result").getJSONObject(i)));
+                            }
+                        }
+                        else
+                        {
+                            Toast.makeText(getApplicationContext(), "No products available in this collection.", Toast.LENGTH_LONG).show();
+                        }
+
+                        Fragment fragment = ProductFragment.newInstance(items, getListviewWidth());
+                        mContent = fragment;
+                        getFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.container, mContent)
+                                .commit();
+                        menu.showContent();
+
+                        setInitialPosition();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onFragmentInteraction(String title) {
+
+    }
+
+    @Override
+    public void onFragmentInteractionForProductItem(ProductItem item) {
+        try {
+            /*Intent intent = new Intent(this, DetailActivity.class);
+            intent.putExtra("ID",item.getItemId());
+            intent.putExtra("TITLE",item.getItemName());
+            intent.putExtra("DESCRIPTION",item.getItemDescription());
+            intent.putExtra("PICTURE",item.getItemPictureUrls());
+            intent.putExtra("BRAND",item.getItemBrand());
+            intent.putExtra("PRICE",item.getItemPrice());
+            intent.putExtra("MODIFIER",item.getItemModifier());
+            intent.putExtra("VARIATION",item.getItemVariations());
+            startActivity(intent);*/
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        try
+        {
+            instance=null;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        super.onDestroy();
+    }
+}
+
+
+
+
+
+
+
+
+
+        /*extends SlidingFragmentActivity implements ProductFragment.OnFragmentInteractionListener,MenuFragment.OnFragmentInteractionListener{
+
     private Moltin moltin;
     private Context context;
 
@@ -126,7 +404,7 @@ public class ProductActivity extends SlidingFragmentActivity implements ProductF
 
         /*((LinearLayout)findViewById(R.id.btnCollections)).setBackgroundColor(getResources().getColor(R.color.BLACK));
         ((LinearLayout)findViewById(R.id.btnCart)).setBackgroundColor(getResources().getColor(android.R.color.transparent));
-        ((LinearLayout)findViewById(R.id.btnPayment)).setBackgroundColor(getResources().getColor(android.R.color.transparent));*/
+        ((LinearLayout)findViewById(R.id.btnPayment)).setBackgroundColor(getResources().getColor(android.R.color.transparent));
     }
 
     @Override
@@ -182,4 +460,4 @@ public class ProductActivity extends SlidingFragmentActivity implements ProductF
     public void onFragmentInteraction(String title) {
 
     }
-}
+}*/

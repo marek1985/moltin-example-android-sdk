@@ -1,10 +1,6 @@
 package moltin.example_moltin.interfaces;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +8,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.InputStream;
+import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 import java.util.List;
 
 import moltin.example_moltin.R;
@@ -20,14 +19,14 @@ import moltin.example_moltin.data.CartItem;
 
 public class CartItemArrayAdapter extends ArrayAdapter<CartItem> {
 
-    private Context mContext;
+    private Context context;
     private String imageUrl;
-    private CartItem postItem;
+    private CartItem item;
     private String titleEng;
 
     public CartItemArrayAdapter(Context context, List<CartItem> items, String title) {
         super(context, R.layout.cart_list_item, items);
-        mContext = context;
+        this.context = context;
         titleEng = title;
     }
 
@@ -42,10 +41,9 @@ public class CartItemArrayAdapter extends ArrayAdapter<CartItem> {
 
                 viewHolder = new ViewHolder();
                 viewHolder.title = (TextView) convertView.findViewById(R.id.txtTitle);
-                viewHolder.description = (TextView) convertView.findViewById(R.id.txtDescription);
-                viewHolder.image = (ImageView) convertView.findViewById(R.id.imgItem);
-                viewHolder.brand = (TextView) convertView.findViewById(R.id.txtBrand);
                 viewHolder.price = (TextView) convertView.findViewById(R.id.txtPrice);
+                viewHolder.quantity = (TextView) convertView.findViewById(R.id.txtQuantity);
+                viewHolder.image = (ImageView) convertView.findViewById(R.id.imgItem);
                 convertView.setTag(viewHolder);
             } else {
                 try
@@ -58,10 +56,9 @@ public class CartItemArrayAdapter extends ArrayAdapter<CartItem> {
 
                         viewHolder = new ViewHolder();
                         viewHolder.title = (TextView) convertView.findViewById(R.id.txtTitle);
-                        viewHolder.description = (TextView) convertView.findViewById(R.id.txtDescription);
-                        viewHolder.image = (ImageView) convertView.findViewById(R.id.imgItem);
-                        viewHolder.brand = (TextView) convertView.findViewById(R.id.txtBrand);
                         viewHolder.price = (TextView) convertView.findViewById(R.id.txtPrice);
+                        viewHolder.quantity = (TextView) convertView.findViewById(R.id.txtQuantity);
+                        viewHolder.image = (ImageView) convertView.findViewById(R.id.imgItem);
                         convertView.setTag(viewHolder);
                     }
                 }
@@ -71,18 +68,36 @@ public class CartItemArrayAdapter extends ArrayAdapter<CartItem> {
                     return convertView;
                 }
             }
-            postItem = getItem(position);
+            item = getItem(position);
 
-            imageUrl = postItem.getItemPictureUrl();
 
             try {
-                viewHolder.title.setText(postItem.getItemName());
-                viewHolder.description.setText(postItem.getShortItemDescription());
-                viewHolder.brand.setText(postItem.getItemBrand());
-                viewHolder.price.setText(postItem.getItemPrice());
+                viewHolder.title.setText(item.getItemName());
+                viewHolder.price.setText(item.getItemPrice());
+                viewHolder.quantity.setText("" + item.getItemQuantity());
 
-                if(imageUrl!=null && imageUrl.length()>3)new DownloadImageTask(viewHolder.image).execute(imageUrl);
-                else viewHolder.image.setImageResource(android.R.color.transparent);
+                if(item.getItemPictureUrl()!=null && item.getItemPictureUrl().length>0);
+                {
+                    try {
+                        String imageUrl= item.getItemPictureUrl()[0];
+                        if(imageUrl!=null && imageUrl.length()>3)
+                        {
+                            ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context.getApplicationContext())
+                                    // You can pass your own memory cache implementation
+                                    .discCacheFileNameGenerator(new HashCodeFileNameGenerator())
+                                    .build();
+
+                            ImageLoader imageLoader = ImageLoader.getInstance();
+                            imageLoader.init(config);
+                            imageLoader.displayImage(imageUrl, viewHolder.image);
+                            //new DownloadImageTask(holder.image).execute(imageUrl);
+                        }
+                        else viewHolder.image.setImageResource(android.R.color.transparent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -92,34 +107,8 @@ public class CartItemArrayAdapter extends ArrayAdapter<CartItem> {
 
     private static class ViewHolder {
         TextView title;
-        TextView description;
-        ImageView image;
-        TextView brand;
         TextView price;
-    }
-
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
+        TextView quantity;
+        ImageView image;
     }
 }

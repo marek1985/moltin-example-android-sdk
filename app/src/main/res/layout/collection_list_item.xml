@@ -1,57 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:background="@drawable/gradient_black_horizontal">
+    android:paddingBottom="15dp"
+    android:background="@color/gray_dark">
 
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/imgItem"
-            android:scaleType="centerCrop" />
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/gradient_black_horizontal"
+            android:layout_weight="10">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/imgItem"
+                android:scaleType="centerCrop"
+                android:layout_marginTop="13dp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"></RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:gravity="bottom"
-            android:padding="20dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Medium Text"
-                android:id="@+id/txtDescription"
-                android:textColor="@android:color/darker_gray"
-                android:shadowColor="@color/BLUE_DARK"
-                android:shadowDx="1"
-                android:shadowDy="1"
-                android:shadowRadius="2" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="10">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:text="MOLTIN ITEM COLLECTION"
+                    android:id="@+id/txtTitle"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@android:color/white"
+                    android:textSize="40dp"
+                    android:gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="70dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="50dp"
+                    android:layout_weight="2"
+                    android:shadowColor="@color/gray_dark"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="2" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="VIEW COLLECTION"
+                    android:id="@+id/btnInItem"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/btn_white"
+                    android:onClick="onItemClickHandler"
+                    android:textColor="@android:color/white"
+                    android:textSize="20dp"
+                    android:paddingLeft="30dp"
+                    android:paddingRight="30dp"
+                    android:shadowColor="@color/gray_dark"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="2" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:text="Medium Text"
+                    android:id="@+id/txtDescription"
+                    android:textColor="@color/gray_medium"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:gravity="top|center_horizontal"
+                    android:textSize="16dp"
+                    android:layout_weight="3"
+                    android:layout_marginTop="30dp"
+                    android:shadowColor="@android:color/white"
+                    android:shadowDx="2"
+                    android:shadowDy="2"
+                    android:shadowRadius="2" />
+            </LinearLayout>
+
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Large Text"
-            android:id="@+id/txtTitle"
-            android:layout_margin="20dp"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            android:shadowColor="@color/BLUE_DARK"
-            android:shadowDx="1"
-            android:shadowDy="1"
-            android:shadowRadius="2" />
     </RelativeLayout>
 </LinearLayout>

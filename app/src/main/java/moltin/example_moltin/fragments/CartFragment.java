@@ -12,7 +12,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-import moltin.example_moltin.activities.ProductActivity;
+import moltin.example_moltin.activities.CartActivity;
 import moltin.example_moltin.data.CartItem;
 import moltin.example_moltin.interfaces.CartItemArrayAdapter;
 
@@ -26,7 +26,7 @@ public class CartFragment extends ListFragment implements AbsListView.OnScrollLi
     private ArrayList<CartItem> items;
     private String titleEng;
     private CartItemArrayAdapter itemAdapter;
-    private ProductActivity productActivity;
+    private CartActivity cartActivity;
     private int lastPosition=0;
 
     private OnFragmentInteractionListener mListener;
@@ -49,7 +49,7 @@ public class CartFragment extends ListFragment implements AbsListView.OnScrollLi
 
         try
         {
-            productActivity = ((ProductActivity)getActivity());
+            cartActivity = ((CartActivity)getActivity());
 
             itemAdapter = new CartItemArrayAdapter(getActivity(), items, titleEng);
             setListAdapter(itemAdapter);

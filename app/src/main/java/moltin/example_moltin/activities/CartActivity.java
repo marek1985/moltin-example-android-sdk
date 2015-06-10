@@ -3,12 +3,15 @@ package moltin.example_moltin.activities;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
@@ -16,11 +19,13 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import moltin.android_sdk.Moltin;
 import moltin.android_sdk.utilities.Constants;
 import moltin.example_moltin.R;
 import moltin.example_moltin.data.CartItem;
+import moltin.example_moltin.data.TotalCartItem;
 import moltin.example_moltin.fragments.CartFragment;
 import moltin.example_moltin.fragments.MenuFragment;
 
@@ -32,6 +37,8 @@ public class CartActivity extends SlidingFragmentActivity implements CartFragmen
     private SlidingMenu menu;
     private Fragment mContent;
     private MenuFragment menuFragment;
+    private ArrayList<CartItem> items;
+    private TotalCartItem cart;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,10 +63,27 @@ public class CartActivity extends SlidingFragmentActivity implements CartFragmen
                         ArrayList<CartItem> items = new ArrayList<CartItem>();
                         try {
                             JSONObject json = (JSONObject) msg.obj;
-                            if (json.has("status") && json.getBoolean("status") && json.has("result") && json.getJSONArray("result").length() > 0) {
-                                for (int i = 0; i < json.getJSONArray("result").length(); i++) {
-                                    items.add(new CartItem(json.getJSONArray("result").getJSONObject(i)));
+                            if (json.has("status") && json.getBoolean("status") && json.has("result") && !json.isNull("result") && json.getJSONObject("result").has("contents") && !json.getJSONObject("result").isNull("contents")) {
+                                JSONObject jsonContent=json.getJSONObject("result").getJSONObject("contents");/*.getJSONObject(moltin.cart.getIdentifier())*/
+
+                                cart=new TotalCartItem(json.getJSONObject("result"));
+
+                                Iterator i1 = jsonContent.keys();
+
+                                while (i1.hasNext()) {
+                                    String key1 = (String) i1.next();
+                                    if (jsonContent.get(key1) instanceof JSONObject) {
+
+                                        CartItem itemForArray=new CartItem(jsonContent.getJSONObject(key1));
+                                        itemForArray.setItemIdentifier(key1);
+
+                                        items.add(itemForArray);
+                                    }
                                 }
+
+                                cart.setItems(items);
+
+                                ((TextView)findViewById(R.id.txtTotalPrice)).setText(cart.getItemTotalPrice());
                             }
 
                             Fragment fragment = CartFragment.newInstance(items, "CARTS", 0);
@@ -117,20 +141,25 @@ public class CartActivity extends SlidingFragmentActivity implements CartFragmen
                 .beginTransaction()
                 .replace(R.id.menu_frame, menuFragment)
                 .commit();
+
+
+        ((TextView)findViewById(R.id.txtTotalPrice)).setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Regular.otf"));
+        ((TextView)findViewById(R.id.txtTotal)).setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Regular.otf"));
+        ((Button)findViewById(R.id.btnCheckout)).setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Regular.otf"));
     }
 
     @Override
     public void onFragmentInteractionForCartItem(CartItem item) {
 
         try {
-            Intent intent = new Intent(this, DetailActivity.class);
+            /*Intent intent = new Intent(this, DetailActivity.class);
             intent.putExtra("ID",item.getItemId());
             intent.putExtra("TITLE",item.getItemName());
             intent.putExtra("DESCRIPTION",item.getItemDescription());
             intent.putExtra("PICTURE",item.getItemPictureUrl());
             intent.putExtra("BRAND",item.getItemBrand());
             intent.putExtra("PRICE",item.getItemPrice());
-            startActivity(intent);
+            startActivity(intent);*/
         }
         catch (Exception e)
         {
@@ -144,16 +173,9 @@ public class CartActivity extends SlidingFragmentActivity implements CartFragmen
         try
         {
             switch (view.getId()) {
-                case R.id.btnCollections:
-                    finish();
-                    break;
                 case R.id.btnCart:
                     Intent intent2 = new Intent(this, CartActivity.class);
                     startActivity(intent2);
-                    break;
-                case R.id.btnPayment:
-                    Intent intent3 = new Intent(this, PaymentActivity.class);
-                    startActivity(intent3);
                     break;
             }
         }
