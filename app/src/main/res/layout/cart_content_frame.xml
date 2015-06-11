@@ -19,7 +19,7 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_weight="10"
                 android:background="@color/gray_dark"
                 android:gravity="center_vertical|center_horizontal">
 
@@ -35,14 +35,14 @@
                 android:id="@+id/cart_content_frame"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="10"
+                android:layout_weight="77"
                 android:background="@color/gray_dark"/>
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="3"
+                android:layout_weight="33"
                 android:background="@color/gray_dark"
                 android:gravity="top|center_horizontal">
 

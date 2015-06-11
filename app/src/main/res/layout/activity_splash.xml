@@ -76,7 +76,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="MOLTIN e-STORE"
+            android:text="MOLTIN"
             android:id="@+id/txtCollectionName"
             android:layout_gravity="center_horizontal"
             android:textColor="@android:color/white"
@@ -90,7 +90,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ENTER"
+            android:text="ENTER STORE"
             android:id="@+id/btnGo"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/btn_white"

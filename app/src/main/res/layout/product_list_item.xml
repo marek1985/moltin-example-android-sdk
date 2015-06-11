@@ -135,35 +135,32 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
                     android:id="@+id/imageView"
                     android:src="@drawable/corner_u_l"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true" />
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/imageView2"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
                     android:src="@drawable/corner_u_r"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="false"
                     android:layout_alignParentRight="true" />
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/imageView4"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
                     android:src="@drawable/corner_l_l"
                     android:layout_alignParentTop="false"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentBottom="true" />
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/imageView5"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
                     android:src="@drawable/corner_l_r"
                     android:layout_alignParentTop="false"
                     android:layout_alignParentLeft="false"

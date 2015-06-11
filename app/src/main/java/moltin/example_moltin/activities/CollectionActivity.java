@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
@@ -308,8 +309,15 @@ public class CollectionActivity extends SlidingFragmentActivity implements CartF
                     });
                     break;
                 case R.id.btnCheckout:
-                    Intent intent = new Intent(this, ShippingActivity.class);
-                    startActivity(intent);
+                    if(menuFragment.cart!=null && menuFragment.cart.getItemTotalNumber()!=null && menuFragment.cart.getItemTotalNumber()>0)
+                    {
+                        Intent intent = new Intent(this, ShippingActivity.class);
+                        startActivity(intent);
+                    }
+                    else
+                    {
+                        Toast.makeText(getApplicationContext(), "Cart is empty", Toast.LENGTH_LONG).show();
+                    }
                     break;
                 case R.id.btnMenu:
                     onHomeClicked();

@@ -268,8 +268,15 @@ public class ProductActivity extends SlidingFragmentActivity implements CartFrag
                     });
                     break;
                 case R.id.btnCheckout:
-                    Intent intent = new Intent(this, ShippingActivity.class);
-                    startActivity(intent);
+                    if(menuFragment.cart!=null && menuFragment.cart.getItemTotalNumber()!=null && menuFragment.cart.getItemTotalNumber()>0)
+                    {
+                        Intent intent = new Intent(this, ShippingActivity.class);
+                        startActivity(intent);
+                    }
+                    else
+                    {
+                        Toast.makeText(getApplicationContext(), "Cart is empty", Toast.LENGTH_LONG).show();
+                    }
                     break;
                 case R.id.btnMenu:
                     onHomeClicked();
