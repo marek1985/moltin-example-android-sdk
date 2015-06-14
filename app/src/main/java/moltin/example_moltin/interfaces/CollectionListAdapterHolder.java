@@ -10,9 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.applidium.shutterbug.utils.ShutterbugManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,15 +60,16 @@ public class CollectionListAdapterHolder extends CustomRecyclerView.Adapter<Coll
                 String imageUrl=items.get(position).getItemPictureUrl()[0];
                 if(imageUrl!=null && imageUrl.length()>3)
                 {
-                    ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity.getApplicationContext())
+                    /*ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity.getApplicationContext())
                             // You can pass your own memory cache implementation
                             .discCacheFileNameGenerator(new HashCodeFileNameGenerator())
                             .build();
 
                     ImageLoader imageLoader = ImageLoader.getInstance();
                     imageLoader.init(config);
-                    imageLoader.displayImage(imageUrl, holder.image);
+                    imageLoader.displayImage(imageUrl, holder.image);*/
                     //new DownloadImageTask(holder.image).execute(imageUrl);
+                    ShutterbugManager.getSharedImageManager(activity.getApplicationContext()).download(imageUrl, ((ImageView)holder.image));
                 }
                 else holder.image.setImageResource(android.R.color.transparent);
             } catch (Exception e) {
@@ -88,7 +87,7 @@ public class CollectionListAdapterHolder extends CustomRecyclerView.Adapter<Coll
 
         TextView title, description;
         Button button;
-        ImageView image;
+        com.applidium.shutterbug.FetchableImageView image;
         LinearLayout layoutImages;
         LinearLayout layoutScrollImages;
 
@@ -97,7 +96,7 @@ public class CollectionListAdapterHolder extends CustomRecyclerView.Adapter<Coll
             title = (TextView) view.findViewById(R.id.txtTitle);
             description = (TextView) view.findViewById(R.id.txtDescription);
             button = (Button) view.findViewById(R.id.btnInItem);
-            image = (ImageView) view.findViewById(R.id.imgItem);
+            image = (com.applidium.shutterbug.FetchableImageView) view.findViewById(R.id.imgItem);
             layoutImages = (LinearLayout) view.findViewById(R.id.layImages);
             layoutScrollImages = (LinearLayout) view.findViewById(R.id.layScrollImages);
             view.setOnClickListener(this);

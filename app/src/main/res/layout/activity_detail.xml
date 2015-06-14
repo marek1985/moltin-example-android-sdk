@@ -60,7 +60,7 @@
                     android:layout_weight="1"></LinearLayout>
             </LinearLayout>
 
-            <ImageView
+            <com.applidium.shutterbug.FetchableImageView
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:id="@+id/imgDetailPhoto"

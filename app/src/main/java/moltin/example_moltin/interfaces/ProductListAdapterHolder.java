@@ -10,9 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.applidium.shutterbug.utils.ShutterbugManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,23 +62,17 @@ public class ProductListAdapterHolder extends CustomRecyclerView.Adapter<Product
                 String imageUrl=items.get(position).getItemPictureUrl()[0];
                 if(imageUrl!=null && imageUrl.length()>3)
                 {
-                    ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity.getApplicationContext())
+                    /*ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity.getApplicationContext())
                             // You can pass your own memory cache implementation
                             .discCacheFileNameGenerator(new HashCodeFileNameGenerator())
                             .build();
 
-                    /*final float scale = activity.getApplicationContext().getResources().getDisplayMetrics().density;
-
-                    DisplayImageOptions options = new DisplayImageOptions.Builder()
-                            .displayer(new RoundedBitmapDisplayer((int)(10*scale + 0.5f))) //rounded corner bitmap
-                            .cacheInMemory(true)
-                            .cacheOnDisc(true)
-                            .build();*/
 
                     ImageLoader imageLoader = ImageLoader.getInstance();
                     imageLoader.init(config);
-                    imageLoader.displayImage(imageUrl, holder.image/*, options*/);
+                    imageLoader.displayImage(imageUrl, holder.image);*/
                     //new DownloadImageTask(holder.image).execute(imageUrl);
+                    ShutterbugManager.getSharedImageManager(activity.getApplicationContext()).download(imageUrl, ((ImageView)holder.image));
                 }
                 else holder.image.setImageResource(android.R.color.transparent);
 
@@ -92,19 +84,20 @@ public class ProductListAdapterHolder extends CustomRecyclerView.Adapter<Product
 
                     for(int i=1;i<items.get(position).getItemPictureUrl().length;i++)
                     {
-                        ImageView img=new ImageView(activity);
+                        com.applidium.shutterbug.FetchableImageView img=new com.applidium.shutterbug.FetchableImageView(activity);
                         String imageUrlNext=items.get(position).getItemPictureUrl()[i];
                         if(img!=null && imageUrlNext.length()>3)
                         {
-                            ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity.getApplicationContext())
+                            /*ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity.getApplicationContext())
                                     // You can pass your own memory cache implementation
                                     .discCacheFileNameGenerator(new HashCodeFileNameGenerator())
                                     .build();
 
                             ImageLoader imageLoader = ImageLoader.getInstance();
                             imageLoader.init(config);
-                            imageLoader.displayImage(imageUrlNext, img);
+                            imageLoader.displayImage(imageUrlNext, img);*/
                             //new DownloadImageTask(img).execute(imageUrlNext);
+                            ShutterbugManager.getSharedImageManager(activity.getApplicationContext()).download(imageUrlNext, ((ImageView)img));
                         }
                         else img.setImageResource(android.R.color.transparent);
 
@@ -136,7 +129,7 @@ public class ProductListAdapterHolder extends CustomRecyclerView.Adapter<Product
 
         TextView title, description, collection;
         Button button;
-        ImageView image;
+        com.applidium.shutterbug.FetchableImageView image;
         LinearLayout layoutImages;
         LinearLayout layoutScrollImages;
 
@@ -146,7 +139,7 @@ public class ProductListAdapterHolder extends CustomRecyclerView.Adapter<Product
             description = (TextView) view.findViewById(R.id.txtDescription);
             collection = (TextView) view.findViewById(R.id.txtCollection);
             button = (Button) view.findViewById(R.id.btnInItem);
-            image = (ImageView) view.findViewById(R.id.imgItem);
+            image = (com.applidium.shutterbug.FetchableImageView) view.findViewById(R.id.imgItem);
             layoutImages = (LinearLayout) view.findViewById(R.id.layImages);
             layoutScrollImages = (LinearLayout) view.findViewById(R.id.layScrollImages);
             view.setOnClickListener(this);

@@ -9,9 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.applidium.shutterbug.utils.ShutterbugManager;
 
 import java.util.List;
 
@@ -33,43 +31,43 @@ public class CartItemArrayAdapter extends ArrayAdapter<CartItem> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
+        ViewHolder holder;
         LayoutInflater inflater = LayoutInflater.from(getContext());
         {
             if(convertView == null)
             {
                 convertView = inflater.inflate(R.layout.cart_list_item, parent, false);
 
-                viewHolder = new ViewHolder();
-                viewHolder.title = (TextView) convertView.findViewById(R.id.txtTitle);
-                viewHolder.price = (TextView) convertView.findViewById(R.id.txtPrice);
-                viewHolder.quantity = (TextView) convertView.findViewById(R.id.txtQuantity);
-                viewHolder.image = (ImageView) convertView.findViewById(R.id.imgItem);
-                viewHolder.btnPlus = (LinearLayout) convertView.findViewById(R.id.btnPlus);
-                viewHolder.btnMinus = (LinearLayout) convertView.findViewById(R.id.btnMinus);
-                viewHolder.btnDelete = (LinearLayout) convertView.findViewById(R.id.btnDelete);
+                holder = new ViewHolder();
+                holder.title = (TextView) convertView.findViewById(R.id.txtTitle);
+                holder.price = (TextView) convertView.findViewById(R.id.txtPrice);
+                holder.quantity = (TextView) convertView.findViewById(R.id.txtQuantity);
+                holder.image = (com.applidium.shutterbug.FetchableImageView) convertView.findViewById(R.id.imgItem);
+                holder.btnPlus = (LinearLayout) convertView.findViewById(R.id.btnPlus);
+                holder.btnMinus = (LinearLayout) convertView.findViewById(R.id.btnMinus);
+                holder.btnDelete = (LinearLayout) convertView.findViewById(R.id.btnDelete);
 
-                convertView.setTag(viewHolder);
+                convertView.setTag(holder);
             } else {
                 try
                 {
-                    viewHolder = (ViewHolder) convertView.getTag();
+                    holder = (ViewHolder) convertView.getTag();
 
-                    if (viewHolder == null)
+                    if (holder == null)
                     {
                         convertView = inflater.inflate(R.layout.cart_list_item, parent, false);
 
-                        viewHolder = new ViewHolder();
-                        viewHolder.title = (TextView) convertView.findViewById(R.id.txtTitle);
-                        viewHolder.price = (TextView) convertView.findViewById(R.id.txtPrice);
-                        viewHolder.quantity = (TextView) convertView.findViewById(R.id.txtQuantity);
-                        viewHolder.image = (ImageView) convertView.findViewById(R.id.imgItem);
-                        viewHolder.btnPlus = (LinearLayout) convertView.findViewById(R.id.btnPlus);
-                        viewHolder.btnMinus = (LinearLayout) convertView.findViewById(R.id.btnMinus);
-                        viewHolder.btnDelete = (LinearLayout) convertView.findViewById(R.id.btnDelete);
+                        holder = new ViewHolder();
+                        holder.title = (TextView) convertView.findViewById(R.id.txtTitle);
+                        holder.price = (TextView) convertView.findViewById(R.id.txtPrice);
+                        holder.quantity = (TextView) convertView.findViewById(R.id.txtQuantity);
+                        holder.image = (com.applidium.shutterbug.FetchableImageView) convertView.findViewById(R.id.imgItem);
+                        holder.btnPlus = (LinearLayout) convertView.findViewById(R.id.btnPlus);
+                        holder.btnMinus = (LinearLayout) convertView.findViewById(R.id.btnMinus);
+                        holder.btnDelete = (LinearLayout) convertView.findViewById(R.id.btnDelete);
 
 
-                        convertView.setTag(viewHolder);
+                        convertView.setTag(holder);
                     }
                 }
                 catch (Exception e)
@@ -82,13 +80,13 @@ public class CartItemArrayAdapter extends ArrayAdapter<CartItem> {
 
 
             try {
-                viewHolder.title.setText(item.getItemName());
-                viewHolder.price.setText(item.getItemPrice());
-                viewHolder.quantity.setText("" + item.getItemQuantity());
+                holder.title.setText(item.getItemName());
+                holder.price.setText(item.getItemPrice());
+                holder.quantity.setText("" + item.getItemQuantity());
 
-                viewHolder.btnPlus.setTag(position);
-                viewHolder.btnMinus.setTag(position);
-                viewHolder.btnDelete.setTag(position);
+                holder.btnPlus.setTag(position);
+                holder.btnMinus.setTag(position);
+                holder.btnDelete.setTag(position);
 
                 if(item.getItemPictureUrl()!=null && item.getItemPictureUrl().length>0);
                 {
@@ -96,17 +94,18 @@ public class CartItemArrayAdapter extends ArrayAdapter<CartItem> {
                         String imageUrl= item.getItemPictureUrl()[0];
                         if(imageUrl!=null && imageUrl.length()>3)
                         {
-                            ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context.getApplicationContext())
+                            /*ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context.getApplicationContext())
                                     // You can pass your own memory cache implementation
                                     .discCacheFileNameGenerator(new HashCodeFileNameGenerator())
                                     .build();
 
                             ImageLoader imageLoader = ImageLoader.getInstance();
                             imageLoader.init(config);
-                            imageLoader.displayImage(imageUrl, viewHolder.image);
+                            imageLoader.displayImage(imageUrl, holder.image);*/
                             //new DownloadImageTask(holder.image).execute(imageUrl);
+                            ShutterbugManager.getSharedImageManager(context).download(imageUrl, ((ImageView)holder.image));
                         }
-                        else viewHolder.image.setImageResource(android.R.color.transparent);
+                        else holder.image.setImageResource(android.R.color.transparent);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -123,7 +122,7 @@ public class CartItemArrayAdapter extends ArrayAdapter<CartItem> {
         TextView title;
         TextView price;
         TextView quantity;
-        ImageView image;
+        com.applidium.shutterbug.FetchableImageView image;
         LinearLayout btnPlus;
         LinearLayout btnMinus;
         LinearLayout btnDelete;

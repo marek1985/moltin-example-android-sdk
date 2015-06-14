@@ -32,4 +32,5 @@ dependencies {
     compile project(':sliding-menu')
     compile 'com.android.support:recyclerview-v7:+'
     compile files('libs/universal-image-loader-1.9.4.jar')
+    compile project(':shutterbug')
 }

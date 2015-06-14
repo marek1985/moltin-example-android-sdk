@@ -19,7 +19,7 @@
             android:layout_height="match_parent"
             android:layout_weight="10">
 
-            <ImageView
+            <com.applidium.shutterbug.FetchableImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/imgItem"
@@ -30,6 +30,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"></RelativeLayout>
         </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/gray_dark"
+            android:alpha="0.5"></LinearLayout>
 
         <LinearLayout
             android:orientation="vertical"
@@ -87,14 +94,14 @@
                     android:layout_height="0dp"
                     android:text="Medium Text"
                     android:id="@+id/txtDescription"
-                    android:textColor="@color/gray_medium"
+                    android:textColor="@android:color/white"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:gravity="top|center_horizontal"
                     android:textSize="16dp"
                     android:layout_weight="3"
                     android:layout_marginTop="30dp"
-                    android:shadowColor="@android:color/white"
+                    android:shadowColor="@color/gray_medium"
                     android:shadowDx="2"
                     android:shadowDy="2"
                     android:shadowRadius="2" />

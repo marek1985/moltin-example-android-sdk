@@ -3,6 +3,7 @@ package moltin.example_moltin.activities;
 import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,9 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.applidium.shutterbug.utils.ShutterbugManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -83,15 +82,7 @@ public class DetailActivity extends Activity implements NumberPicker.OnValueChan
 
             if(urls!=null && urls.length>0 && urls[0].length()>3)
             {
-                ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
-                        // You can pass your own memory cache implementation
-                        .discCacheFileNameGenerator(new HashCodeFileNameGenerator())
-                        .build();
-
-                ImageLoader imageLoader = ImageLoader.getInstance();
-                imageLoader.init(config);
-                imageLoader.displayImage(urls[0].replace("|",""), (ImageView)findViewById(R.id.imgDetailPhoto));
-                //new DownloadImageTask(((ImageView)findViewById(R.id.imgDetailPhoto))).execute(urls[0].replace("|",""));
+                ShutterbugManager.getSharedImageManager(getApplicationContext()).download(urls[0].replace("|",""), ((ImageView)findViewById(R.id.imgDetailPhoto)));
             }
             else
                 ((ImageView)findViewById(R.id.imgDetailPhoto)).setImageResource(android.R.color.transparent);
@@ -223,19 +214,20 @@ public class DetailActivity extends Activity implements NumberPicker.OnValueChan
 
                 for(int i=1;i<urls.length;i++)
                 {
-                    ImageView img=new ImageView(this);
+                    com.applidium.shutterbug.FetchableImageView img=new com.applidium.shutterbug.FetchableImageView(this);
                     String imageUrlNext=urls[i].replace("|","");
                     if(img!=null && imageUrlNext.length()>3)
                     {
-                        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+                        /*ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
                                 // You can pass your own memory cache implementation
                                 .discCacheFileNameGenerator(new HashCodeFileNameGenerator())
                                 .build();
 
                         ImageLoader imageLoader = ImageLoader.getInstance();
                         imageLoader.init(config);
-                        imageLoader.displayImage(imageUrlNext, img);
+                        imageLoader.displayImage(imageUrlNext, img);*/
                         //new moltin.example_moltin.utils.DownloadImageTask(img).execute(imageUrlNext);
+                        ShutterbugManager.getSharedImageManager(getApplicationContext()).download(imageUrlNext, ((ImageView)img));
                     }
                     else
                     img.setImageResource(android.R.color.transparent);
@@ -246,6 +238,15 @@ public class DetailActivity extends Activity implements NumberPicker.OnValueChan
                             (int)(80*scale + 0.5f));
                     img.setLayoutParams(params);
                     img.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    img.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Drawable bigDrawable = ((ImageView)findViewById(R.id.imgDetailPhoto)).getDrawable();
+                            ((ImageView) findViewById(R.id.imgDetailPhoto)).setImageDrawable(((ImageView) view).getDrawable());
+                            ((ImageView) view).setImageDrawable(bigDrawable);
+                        }
+                    });
+
                     layoutScrollImages.addView(img);
                 }
             }
@@ -320,8 +321,12 @@ public class DetailActivity extends Activity implements NumberPicker.OnValueChan
         d.setContentView(R.layout.dialog);
         Button b1 = (Button) d.findViewById(R.id.button1);
         b1.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_violet));
+        b1.setTextColor(getResources().getColor(android.R.color.white));
+        b1.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Bold.otf"));
         Button b2 = (Button) d.findViewById(R.id.button2);
         b2.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_violet));
+        b2.setTextColor(getResources().getColor(android.R.color.white));
+        b2.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Bold.otf"));
         final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
         np.setMaxValue(100);
         np.setMinValue(1);

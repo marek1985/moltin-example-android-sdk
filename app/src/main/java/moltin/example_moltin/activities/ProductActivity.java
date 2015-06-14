@@ -145,9 +145,10 @@ public class ProductActivity extends SlidingFragmentActivity implements CartFrag
             else
                 img.setImageDrawable(getResources().getDrawable(R.drawable.circle_inactive));
 
+            final float scale = getApplicationContext().getResources().getDisplayMetrics().density;
             ViewGroup.MarginLayoutParams params = new ViewGroup.MarginLayoutParams(
-                    30,
-                    30);
+                    (int)(10*scale + 0.5f),
+                    (int)(10*scale + 0.5f));
             params.leftMargin = 5;
             params.rightMargin = 5;
             params.topMargin = 5;
