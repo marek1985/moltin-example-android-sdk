@@ -34,7 +34,7 @@ import moltin.example_moltin.fragments.CartFragment;
 import moltin.example_moltin.fragments.CollectionFragment;
 
 
-public class CollectionActivity extends SlidingFragmentActivity implements CartFragment.OnFragmentChangeListener, CartFragment.OnFragmentInteractionListener, CollectionFragment.OnCollectionFragmentInteractionListener {
+public class CollectionActivity extends SlidingFragmentActivity implements CartFragment.OnFragmentUpdatedListener, CartFragment.OnFragmentChangeListener, CartFragment.OnFragmentInteractionListener, CollectionFragment.OnCollectionFragmentInteractionListener {
     private Moltin moltin;
     private Context context;
     private ArrayList<CollectionItem> items;
@@ -90,7 +90,6 @@ public class CollectionActivity extends SlidingFragmentActivity implements CartF
         menu = getSlidingMenu();
         menu.setShadowWidth(20);
         menu.setBehindWidth(getListviewWidth()-50);
-        //menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
         menu.setTouchModeBehind(SlidingMenu.TOUCHMODE_FULLSCREEN);
         menu.setMode(SlidingMenu.RIGHT);
         menu.setFadeEnabled(false);
@@ -200,7 +199,6 @@ public class CollectionActivity extends SlidingFragmentActivity implements CartF
                     moltin.cart.update(menuFragment.cart.getItems().get((int)view.getTag()).getItemIdentifier(),new String[][]{{"quantity",""+(menuFragment.cart.getItems().get((int)view.getTag()).getItemQuantity()+1)}}, new Handler.Callback() {//"wf60kt82vtzkjIMslZ1FmDyV8WUWNQlLxUiRVLS4", new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
-                            ((LinearLayout)findViewById(R.id.layLoading)).setVisibility(View.GONE);
                             menuFragment.refresh();
                             if (msg.what == Constants.RESULT_OK) {
                                 try {
@@ -210,6 +208,7 @@ public class CollectionActivity extends SlidingFragmentActivity implements CartF
 
                                 return true;
                             } else {
+                                ((LinearLayout)findViewById(R.id.layLoading)).setVisibility(View.GONE);
                                 return false;
                             }
                         }
@@ -220,7 +219,6 @@ public class CollectionActivity extends SlidingFragmentActivity implements CartF
                     moltin.cart.update(menuFragment.cart.getItems().get((int)view.getTag()).getItemIdentifier(),new String[][]{{"quantity",""+(menuFragment.cart.getItems().get((int)view.getTag()).getItemQuantity()-1)}}, new Handler.Callback() {//"wf60kt82vtzkjIMslZ1FmDyV8WUWNQlLxUiRVLS4", new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
-                            ((LinearLayout)findViewById(R.id.layLoading)).setVisibility(View.GONE);
                             menuFragment.refresh();
                             if (msg.what == Constants.RESULT_OK) {
                                 try {
@@ -230,6 +228,7 @@ public class CollectionActivity extends SlidingFragmentActivity implements CartF
 
                                 return true;
                             } else {
+                                ((LinearLayout)findViewById(R.id.layLoading)).setVisibility(View.GONE);
                                 return false;
                             }
                         }
@@ -240,7 +239,6 @@ public class CollectionActivity extends SlidingFragmentActivity implements CartF
                     moltin.cart.remove(menuFragment.cart.getItems().get((int)view.getTag()).getItemIdentifier(), new Handler.Callback() {//"wf60kt82vtzkjIMslZ1FmDyV8WUWNQlLxUiRVLS4", new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
-                            ((LinearLayout)findViewById(R.id.layLoading)).setVisibility(View.GONE);
                             menuFragment.refresh();
                             if (msg.what == Constants.RESULT_OK) {
                                 try {
@@ -250,6 +248,7 @@ public class CollectionActivity extends SlidingFragmentActivity implements CartF
 
                                 return true;
                             } else {
+                                ((LinearLayout)findViewById(R.id.layLoading)).setVisibility(View.GONE);
                                 return false;
                             }
                         }
@@ -363,5 +362,10 @@ public class CollectionActivity extends SlidingFragmentActivity implements CartF
     @Override
     public void onFragmentChangeForCartItem(TotalCartItem cart) {
         ((TextView)findViewById(R.id.txtTotalPrice)).setText(cart.getItemTotalPrice());
+    }
+
+    @Override
+    public void onFragmentUpdatedForCartItem() {
+        ((LinearLayout)findViewById(R.id.layLoading)).setVisibility(View.GONE);
     }
 }

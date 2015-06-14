@@ -70,7 +70,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_margin="10dp"
                         android:layout_weight="2"
-                        android:textColor="@color/violet_dark"
+                        android:textColor="@color/violet_medium"
                         android:gravity="right"
                         android:textSize="20dp" />
                 </LinearLayout>
@@ -81,7 +81,7 @@
                     android:text="CHECKOUT"
                     android:id="@+id/btnCheckout"
                     android:background="@drawable/btn_violet"
-                    android:textColor="@color/WHITE"
+                    android:textColor="@android:color/white"
                     android:paddingLeft="50dp"
                     android:paddingRight="50dp"
                     android:onClick="onClickHandler"

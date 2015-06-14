@@ -11,9 +11,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -26,7 +28,9 @@ import java.util.Iterator;
 import moltin.android_sdk.Moltin;
 import moltin.android_sdk.utilities.Constants;
 import moltin.example_moltin.R;
+import moltin.example_moltin.data.CountryItem;
 import moltin.example_moltin.data.ShippingItem;
+import moltin.example_moltin.interfaces.CountryListAdapter;
 
 public class ShippingActivity extends Activity {
 
@@ -58,6 +62,9 @@ public class ShippingActivity extends Activity {
     private ArrayList<ShippingItem> shippingArray;
     private int lastShippingIndex=0;
 
+    AlertDialog dialog;
+    ArrayList<CountryItem> listCountry;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,22 +76,7 @@ public class ShippingActivity extends Activity {
 
         checkoutOrder();
 
-        //cartOrder();
-
-        //payment();
-
-
-
-
-        //createCustomer();
-
-        //getCustomer();
-
-        //findCustomer();
-
-        //createAddressForCustomer();
-
-        //eraseCurrentCart();
+        getCountryCodes();
 
         changeFonts((RelativeLayout) findViewById(R.id.layMain));
     }
@@ -182,15 +174,11 @@ public class ShippingActivity extends Activity {
                         address_2 += (address_2.length()>0 ? ", " : "") + ((TextView)findViewById(R.id.txtShippingState)).getText().toString();
                     }
 
-                    if( ((TextView)findViewById(R.id.txtShippingCountry)).getText().toString().trim().equals(""))
+                    if(country.equals(""))
                     {
                         ((TextView)findViewById(R.id.txtShippingCountry)).setError("Country code is required!");
                         placeOrder=false;
                         if(oneErrorPerTry)return;
-                    }
-                    else
-                    {
-                        country=((TextView)findViewById(R.id.txtShippingCountry)).getText().toString();
                     }
 
                     if( ((TextView)findViewById(R.id.txtPaymentCardNumber)).getText().toString().trim().equals(""))
@@ -675,6 +663,42 @@ public class ShippingActivity extends Activity {
         }
     }
 
+    private void getCountryCodes() {
+        try {
+
+            moltin.address.fields("","",new Handler.Callback() {
+                @Override
+                public boolean handleMessage(Message msg) {
+
+                    JSONObject json=(JSONObject)msg.obj;
+
+                    if (msg.what == Constants.RESULT_OK) {
+                        try {
+                            JSONObject jsonCountries = json.getJSONObject("result").getJSONObject("country").getJSONObject("available");
+                            {
+                                Iterator i = jsonCountries.keys();
+                                listCountry = new ArrayList<CountryItem>();
+                                while (i.hasNext()) {
+                                    String key = (String) i.next();
+                                    listCountry.add(new CountryItem(key,jsonCountries.getString(key).toString()));
+                                }
+
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void showAlert(final boolean done,String message)
     {
         new AlertDialog.Builder(this)
@@ -691,6 +715,32 @@ public class ShippingActivity extends Activity {
                 })
                 .setIcon((done ? android.R.drawable.ic_dialog_info : android.R.drawable.ic_dialog_alert))
                 .show();
+    }
+
+    public void showCountries(View view)
+    {
+
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        builder.setTitle("Country");
+        ListView list=new ListView(this);
+        list.setAdapter(new CountryListAdapter(listCountry, this));
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View view,
+                                    int position, long arg3) {
+                // TODO Auto-generated method stub
+                if(dialog.isShowing())
+                {
+                    dialog.dismiss();
+                }
+                country = listCountry.get((int)view.getTag()).getItemId();
+                ((TextView)findViewById(R.id.txtShippingCountry)).setText(listCountry.get((int)view.getTag()).getItemTitle());
+            }
+        });
+        builder.setView(list);
+        dialog=builder.create();
+        dialog.show();
     }
 
     protected void changeFonts(ViewGroup root) {

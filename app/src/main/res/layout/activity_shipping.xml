@@ -130,7 +130,7 @@
                                 android:layout_gravity="center_horizontal"
                                 android:layout_margin="10dp"
                                 android:layout_weight="2"
-                                android:textColor="@color/violet_dark"
+                                android:textColor="@color/violet_medium"
                                 android:gravity="right"
                                 android:textSize="20dp" />
                         </LinearLayout>
@@ -271,7 +271,7 @@
                                     android:textSize="18dp"
                                     android:singleLine="true" />
 
-                                <EditText
+                                <TextView
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -279,12 +279,15 @@
                                     android:layout_margin="10dp"
                                     android:padding="10dp"
                                     android:background="@color/gray_medium"
-                                    android:hint="Country code"
+                                    android:hint="Country"
                                     android:textColorHint="@color/gray_light"
                                     android:textColor="@android:color/white"
                                     android:textSize="18dp"
                                     android:singleLine="true"
-                                    android:inputType="textCapCharacters" />
+                                    android:inputType="textCapCharacters"
+                                    android:clickable="true"
+                                    android:onClick="showCountries"
+                                    android:editable="false"/>
 
                             </LinearLayout>
                         </LinearLayout>
@@ -383,7 +386,7 @@
                                 android:text="CHECKOUT"
                                 android:id="@+id/btnPlaceOrder"
                                 android:background="@drawable/btn_violet"
-                                android:textColor="@color/WHITE"
+                                android:textColor="@android:color/white"
                                 android:paddingLeft="50dp"
                                 android:paddingRight="50dp"
                                 android:onClick="onClickHandler"
