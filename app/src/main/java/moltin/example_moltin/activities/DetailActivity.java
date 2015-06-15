@@ -3,7 +3,6 @@ package moltin.example_moltin.activities;
 import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -164,11 +163,6 @@ public class DetailActivity extends Activity implements NumberPicker.OnValueChan
 
                     for(int j=0;j<modItems.get(i).getItemVariation().size();j++)
                     {
-                        /*TextView textVariation=new TextView(this);
-                        textVariation.setText(modItems.get(i).getItemVariation().get(j).getItemTitle() + "(" + modItems.get(i).getItemVariation().get(j).getItemDifference() + ")");
-                        textVariation.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Light.otf"));
-                        layoutModifiers.addView(textVariation);*/
-
                         spinnerArray.add(modItems.get(i).getItemVariation().get(j).getItemTitle() + " (" + modItems.get(i).getItemVariation().get(j).getItemDifference() + ")");
                     }
 
@@ -212,21 +206,12 @@ public class DetailActivity extends Activity implements NumberPicker.OnValueChan
                 if(layoutScrollImages.getChildCount() > 0)
                     layoutScrollImages.removeAllViews();
 
-                for(int i=1;i<urls.length;i++)
+                for(int i=0;i<urls.length;i++)
                 {
                     com.applidium.shutterbug.FetchableImageView img=new com.applidium.shutterbug.FetchableImageView(this);
                     String imageUrlNext=urls[i].replace("|","");
                     if(img!=null && imageUrlNext.length()>3)
                     {
-                        /*ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
-                                // You can pass your own memory cache implementation
-                                .discCacheFileNameGenerator(new HashCodeFileNameGenerator())
-                                .build();
-
-                        ImageLoader imageLoader = ImageLoader.getInstance();
-                        imageLoader.init(config);
-                        imageLoader.displayImage(imageUrlNext, img);*/
-                        //new moltin.example_moltin.utils.DownloadImageTask(img).execute(imageUrlNext);
                         ShutterbugManager.getSharedImageManager(getApplicationContext()).download(imageUrlNext, ((ImageView)img));
                     }
                     else
@@ -241,9 +226,7 @@ public class DetailActivity extends Activity implements NumberPicker.OnValueChan
                     img.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Drawable bigDrawable = ((ImageView)findViewById(R.id.imgDetailPhoto)).getDrawable();
                             ((ImageView) findViewById(R.id.imgDetailPhoto)).setImageDrawable(((ImageView) view).getDrawable());
-                            ((ImageView) view).setImageDrawable(bigDrawable);
                         }
                     });
 

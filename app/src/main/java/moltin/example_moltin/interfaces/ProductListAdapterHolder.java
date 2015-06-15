@@ -1,6 +1,7 @@
 package moltin.example_moltin.interfaces;
 
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,7 +45,7 @@ public class ProductListAdapterHolder extends CustomRecyclerView.Adapter<Product
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder , int position) {
+    public void onBindViewHolder(final ViewHolder holder , int position) {
         holder.title.setText(items.get(position).getItemName());
         holder.description.setText(items.get(position).getItemPrice());
         holder.collection.setText(items.get(position).getItemCollection());
@@ -62,16 +63,6 @@ public class ProductListAdapterHolder extends CustomRecyclerView.Adapter<Product
                 String imageUrl=items.get(position).getItemPictureUrl()[0];
                 if(imageUrl!=null && imageUrl.length()>3)
                 {
-                    /*ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity.getApplicationContext())
-                            // You can pass your own memory cache implementation
-                            .discCacheFileNameGenerator(new HashCodeFileNameGenerator())
-                            .build();
-
-
-                    ImageLoader imageLoader = ImageLoader.getInstance();
-                    imageLoader.init(config);
-                    imageLoader.displayImage(imageUrl, holder.image);*/
-                    //new DownloadImageTask(holder.image).execute(imageUrl);
                     ShutterbugManager.getSharedImageManager(activity.getApplicationContext()).download(imageUrl, ((ImageView)holder.image));
                 }
                 else holder.image.setImageResource(android.R.color.transparent);
@@ -82,21 +73,12 @@ public class ProductListAdapterHolder extends CustomRecyclerView.Adapter<Product
                     if(holder.layoutScrollImages.getChildCount() > 0)
                         holder.layoutScrollImages.removeAllViews();
 
-                    for(int i=1;i<items.get(position).getItemPictureUrl().length;i++)
+                    for(int i=0;i<items.get(position).getItemPictureUrl().length;i++)
                     {
                         com.applidium.shutterbug.FetchableImageView img=new com.applidium.shutterbug.FetchableImageView(activity);
                         String imageUrlNext=items.get(position).getItemPictureUrl()[i];
                         if(img!=null && imageUrlNext.length()>3)
                         {
-                            /*ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity.getApplicationContext())
-                                    // You can pass your own memory cache implementation
-                                    .discCacheFileNameGenerator(new HashCodeFileNameGenerator())
-                                    .build();
-
-                            ImageLoader imageLoader = ImageLoader.getInstance();
-                            imageLoader.init(config);
-                            imageLoader.displayImage(imageUrlNext, img);*/
-                            //new DownloadImageTask(img).execute(imageUrlNext);
                             ShutterbugManager.getSharedImageManager(activity.getApplicationContext()).download(imageUrlNext, ((ImageView)img));
                         }
                         else img.setImageResource(android.R.color.transparent);
@@ -107,6 +89,12 @@ public class ProductListAdapterHolder extends CustomRecyclerView.Adapter<Product
                                 (int)(80*scale + 0.5f));
                         img.setLayoutParams(params);
                         img.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        img.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                holder.image.setImageDrawable(((ImageView) view).getDrawable());
+                            }
+                        });
                         holder.layoutScrollImages.addView(img);
                     }
                 }
@@ -143,18 +131,6 @@ public class ProductListAdapterHolder extends CustomRecyclerView.Adapter<Product
             layoutImages = (LinearLayout) view.findViewById(R.id.layImages);
             layoutScrollImages = (LinearLayout) view.findViewById(R.id.layScrollImages);
             view.setOnClickListener(this);
-
-            /*button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view)
-                {
-                    ProductActivity act=ProductActivity.instance;
-                    if(act!=null)
-                    {
-                        act.showProduct(items.get(getPosition()));
-                    }
-                }
-            });*/
         }
 
         @Override

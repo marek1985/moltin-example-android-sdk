@@ -60,15 +60,6 @@ public class CollectionListAdapterHolder extends CustomRecyclerView.Adapter<Coll
                 String imageUrl=items.get(position).getItemPictureUrl()[0];
                 if(imageUrl!=null && imageUrl.length()>3)
                 {
-                    /*ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity.getApplicationContext())
-                            // You can pass your own memory cache implementation
-                            .discCacheFileNameGenerator(new HashCodeFileNameGenerator())
-                            .build();
-
-                    ImageLoader imageLoader = ImageLoader.getInstance();
-                    imageLoader.init(config);
-                    imageLoader.displayImage(imageUrl, holder.image);*/
-                    //new DownloadImageTask(holder.image).execute(imageUrl);
                     ShutterbugManager.getSharedImageManager(activity.getApplicationContext()).download(imageUrl, ((ImageView)holder.image));
                 }
                 else holder.image.setImageResource(android.R.color.transparent);
