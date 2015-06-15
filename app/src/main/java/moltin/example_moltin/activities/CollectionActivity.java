@@ -257,7 +257,7 @@ public class CollectionActivity extends SlidingFragmentActivity implements CartF
                 case R.id.btnCheckout:
                     if(menuFragment.cart!=null && menuFragment.cart.getItemTotalNumber()!=null && menuFragment.cart.getItemTotalNumber()>0)
                     {
-                        Intent intent = new Intent(this, ShippingActivity.class);
+                        Intent intent = new Intent(this, BillingActivity.class);
                         startActivity(intent);
                     }
                     else

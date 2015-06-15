@@ -53,7 +53,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="SHIPPING ADDRESS"
+                        android:text="BILLING ADDRESS"
                         android:id="@+id/txtActivityTitle"
                         android:textColor="@android:color/white"
                         android:visibility="visible" />
@@ -101,8 +101,22 @@
                             android:orientation="vertical"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:id="@+id/layShippingAddress"
+                            android:id="@+id/layBillingAddress"
                             android:layout_marginTop="10dp">
+
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/txtBillingEmail"
+                                android:layout_margin="10dp"
+                                android:padding="10dp"
+                                android:background="@color/gray_medium"
+                                android:hint="Valid email"
+                                android:textColorHint="@color/gray_light"
+                                android:textColor="@android:color/white"
+                                android:textSize="18dp"
+                                android:singleLine="true"
+                                android:inputType="textEmailAddress" />
 
                             <LinearLayout
                                 android:orientation="horizontal"
@@ -113,7 +127,7 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:id="@+id/txtShippingFirstName"
+                                    android:id="@+id/txtBillingFirstName"
                                     android:layout_margin="10dp"
                                     android:padding="10dp"
                                     android:background="@color/gray_medium"
@@ -127,7 +141,7 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:id="@+id/txtShippingLastName"
+                                    android:id="@+id/txtBillingLastName"
                                     android:layout_margin="10dp"
                                     android:padding="10dp"
                                     android:background="@color/gray_medium"
@@ -142,11 +156,11 @@
                             <EditText
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:id="@+id/txtShippingAddress1"
+                                android:id="@+id/txtBillingAddress1"
                                 android:layout_margin="10dp"
                                 android:padding="10dp"
                                 android:background="@color/gray_medium"
-                                android:hint="Shipping address line 1"
+                                android:hint="Billing address line 1"
                                 android:textColorHint="@color/gray_light"
                                 android:textColor="@android:color/white"
                                 android:textSize="18dp"
@@ -155,11 +169,11 @@
                             <EditText
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:id="@+id/txtShippingAddress2"
+                                android:id="@+id/txtBillingAddress2"
                                 android:layout_margin="10dp"
                                 android:padding="10dp"
                                 android:background="@color/gray_medium"
-                                android:hint="Shipping address line 2 (optional)"
+                                android:hint="Billing address line 2 (optional)"
                                 android:textColorHint="@color/gray_light"
                                 android:textColor="@android:color/white"
                                 android:textSize="18dp"
@@ -174,7 +188,7 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:id="@+id/txtShippingCity"
+                                    android:id="@+id/txtBillingCity"
                                     android:layout_margin="10dp"
                                     android:padding="10dp"
                                     android:background="@color/gray_medium"
@@ -188,7 +202,7 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:id="@+id/txtShippingState"
+                                    android:id="@+id/txtBillingState"
                                     android:layout_margin="10dp"
                                     android:padding="10dp"
                                     android:background="@color/gray_medium"
@@ -209,7 +223,7 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:id="@+id/txtShippingZip"
+                                    android:id="@+id/txtBillingZip"
                                     android:layout_margin="10dp"
                                     android:padding="10dp"
                                     android:background="@color/gray_medium"
@@ -223,7 +237,7 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:id="@+id/txtShippingCountry"
+                                    android:id="@+id/txtBillingCountry"
                                     android:layout_margin="10dp"
                                     android:padding="10dp"
                                     android:background="@color/gray_medium"
@@ -238,7 +252,16 @@
                                     android:editable="false"/>
 
                             </LinearLayout>
+
                         </LinearLayout>
+
+                        <CheckBox
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Billing address same as shipping address"
+                            android:id="@+id/cbSameAsShippingAddress"
+                            android:textColor="@android:color/white"
+                            android:checked="true" />
 
                     </LinearLayout>
                 </LinearLayout>
@@ -259,6 +282,7 @@
                 android:gravity="center"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp" />
+
         </LinearLayout>
 
         <LinearLayout

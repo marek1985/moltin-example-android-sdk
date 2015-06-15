@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -27,12 +28,11 @@ import moltin.example_moltin.R;
 import moltin.example_moltin.data.CountryItem;
 import moltin.example_moltin.interfaces.CountryListAdapter;
 
-public class ShippingActivity extends Activity {
+public class BillingActivity extends Activity {
 
     private Moltin moltin;
 
     String email="";//"2myemail@email.com";
-
     String first_name="";//"joe";
     String last_name="";//"black";
     String address_1="";//"address 1";
@@ -40,31 +40,15 @@ public class ShippingActivity extends Activity {
     String country="";//"GB";
     String postcode="";//"1111";
 
-    String b_first_name="";//"joe";
-    String b_last_name="";//"black";
-    String b_address_1="";//"address 1";
-    String b_address_2="";//"address 2";
-    String b_country="";//"GB";
-    String b_postcode="";//"1111";
-
     AlertDialog dialog;
     ArrayList<CountryItem> listCountry;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shipping);
+        setContentView(R.layout.activity_billing);
 
         moltin = new Moltin(this);
-
-        email = getIntent().getExtras().getString("EMAIL");
-
-        b_first_name = getIntent().getExtras().getString("B_FIRST_NAME");
-        b_last_name = getIntent().getExtras().getString("B_LAST_NAME");
-        b_address_1 = getIntent().getExtras().getString("B_ADDRESS_1");
-        b_address_2 = getIntent().getExtras().getString("B_ADDRESS_2");
-        b_country = getIntent().getExtras().getString("B_COUNTRY");
-        b_postcode = getIntent().getExtras().getString("B_POSTCODE");
 
         getCountryCodes();
 
@@ -82,101 +66,128 @@ public class ShippingActivity extends Activity {
                     boolean placeOrder=true;
                     boolean oneErrorPerTry=true;
 
-                    if( ((TextView)findViewById(R.id.txtShippingFirstName)).getText().toString().trim().equals(""))
+                    if( ((TextView)findViewById(R.id.txtBillingEmail)).getText().toString().trim().equals(""))
                     {
-                        ((TextView)findViewById(R.id.txtShippingFirstName)).setError("First name is required!");
+                        ((TextView)findViewById(R.id.txtBillingEmail)).setError("Email is required!");
                         placeOrder=false;
                         if(oneErrorPerTry)return;
                     }
                     else
                     {
-                        first_name=((TextView)findViewById(R.id.txtShippingFirstName)).getText().toString();
+                        email=((TextView)findViewById(R.id.txtBillingEmail)).getText().toString();
                     }
-                    if( ((TextView)findViewById(R.id.txtShippingLastName)).getText().toString().trim().equals(""))
+
+                    if( ((TextView)findViewById(R.id.txtBillingFirstName)).getText().toString().trim().equals(""))
                     {
-                        ((TextView)findViewById(R.id.txtShippingLastName)).setError("Last name is required!");
+                        ((TextView)findViewById(R.id.txtBillingFirstName)).setError("First name is required!");
                         placeOrder=false;
                         if(oneErrorPerTry)return;
                     }
                     else
                     {
-                        last_name=((TextView)findViewById(R.id.txtShippingLastName)).getText().toString();
+                        first_name=((TextView)findViewById(R.id.txtBillingFirstName)).getText().toString();
                     }
-
-                    if( ((TextView)findViewById(R.id.txtShippingAddress1)).getText().toString().trim().equals(""))
+                    if( ((TextView)findViewById(R.id.txtBillingLastName)).getText().toString().trim().equals(""))
                     {
-                        ((TextView)findViewById(R.id.txtShippingAddress1)).setError("Address is required!");
+                        ((TextView)findViewById(R.id.txtBillingLastName)).setError("Last name is required!");
                         placeOrder=false;
                         if(oneErrorPerTry)return;
                     }
                     else
                     {
-                        address_1=((TextView)findViewById(R.id.txtShippingAddress1)).getText().toString();
+                        last_name=((TextView)findViewById(R.id.txtBillingLastName)).getText().toString();
                     }
 
-                    if( !((TextView)findViewById(R.id.txtShippingAddress1)).getText().toString().trim().equals(""))
+                    if( ((TextView)findViewById(R.id.txtBillingAddress1)).getText().toString().trim().equals(""))
                     {
-                        address_2=((TextView)findViewById(R.id.txtShippingAddress2)).getText().toString();
-                    }
-
-
-                    if( ((TextView)findViewById(R.id.txtShippingCity)).getText().toString().trim().equals(""))
-                    {
-                        ((TextView)findViewById(R.id.txtShippingCity)).setError("City is required!");
+                        ((TextView)findViewById(R.id.txtBillingAddress1)).setError("Address is required!");
                         placeOrder=false;
                         if(oneErrorPerTry)return;
                     }
                     else
                     {
-                        address_2 += (address_2.length()>0 ? ", " : "") + ((TextView)findViewById(R.id.txtShippingCity)).getText().toString();
+                        address_1=((TextView)findViewById(R.id.txtBillingAddress1)).getText().toString();
                     }
 
-                    if( ((TextView)findViewById(R.id.txtShippingZip)).getText().toString().trim().equals(""))
+                    if( !((TextView)findViewById(R.id.txtBillingAddress1)).getText().toString().trim().equals(""))
                     {
-                        ((TextView)findViewById(R.id.txtShippingZip)).setError("Zip code is required!");
+                        address_2=((TextView)findViewById(R.id.txtBillingAddress2)).getText().toString();
+                    }
+
+
+                    if( ((TextView)findViewById(R.id.txtBillingCity)).getText().toString().trim().equals(""))
+                    {
+                        ((TextView)findViewById(R.id.txtBillingCity)).setError("City is required!");
                         placeOrder=false;
                         if(oneErrorPerTry)return;
                     }
                     else
                     {
-                        postcode=((TextView)findViewById(R.id.txtShippingZip)).getText().toString();
+                        address_2 += (address_2.length()>0 ? ", " : "") + ((TextView)findViewById(R.id.txtBillingCity)).getText().toString();
                     }
 
-                    if( ((TextView)findViewById(R.id.txtShippingState)).getText().toString().trim().equals(""))
+                    if( ((TextView)findViewById(R.id.txtBillingZip)).getText().toString().trim().equals(""))
                     {
-                        ((TextView)findViewById(R.id.txtShippingState)).setError("State is required!");
+                        ((TextView)findViewById(R.id.txtBillingZip)).setError("Zip code is required!");
                         placeOrder=false;
                         if(oneErrorPerTry)return;
                     }
                     else
                     {
-                        address_2 += (address_2.length()>0 ? ", " : "") + ((TextView)findViewById(R.id.txtShippingState)).getText().toString();
+                        postcode=((TextView)findViewById(R.id.txtBillingZip)).getText().toString();
+                    }
+
+                    if( ((TextView)findViewById(R.id.txtBillingState)).getText().toString().trim().equals(""))
+                    {
+                        ((TextView)findViewById(R.id.txtBillingState)).setError("State is required!");
+                        placeOrder=false;
+                        if(oneErrorPerTry)return;
+                    }
+                    else
+                    {
+                        address_2 += (address_2.length()>0 ? ", " : "") + ((TextView)findViewById(R.id.txtBillingState)).getText().toString();
                     }
 
                     if(country.equals(""))
                     {
-                        ((TextView)findViewById(R.id.txtShippingCountry)).setError("Country code is required!");
+                        ((TextView)findViewById(R.id.txtBillingCountry)).setError("Country code is required!");
                         placeOrder=false;
                         if(oneErrorPerTry)return;
                     }
 
+
                     if(placeOrder)
                     {
-                        Intent intent = new Intent(this, ShippingMethodActivity.class);
-                        intent.putExtra("EMAIL",email);
-                        intent.putExtra("B_FIRST_NAME",b_first_name);
-                        intent.putExtra("B_LAST_NAME",b_last_name);
-                        intent.putExtra("B_ADDRESS_1",b_address_1);
-                        intent.putExtra("B_ADDRESS_2",b_address_2);
-                        intent.putExtra("B_COUNTRY",b_country);
-                        intent.putExtra("B_POSTCODE",b_postcode);
-                        intent.putExtra("S_FIRST_NAME",first_name);
-                        intent.putExtra("S_LAST_NAME",last_name);
-                        intent.putExtra("S_ADDRESS_1",address_1);
-                        intent.putExtra("S_ADDRESS_2",address_2);
-                        intent.putExtra("S_COUNTRY",country);
-                        intent.putExtra("S_POSTCODE",postcode);
-                        startActivity(intent);
+                        if(((CheckBox)findViewById(R.id.cbSameAsShippingAddress)).isChecked())
+                        {
+                            Intent intent = new Intent(this, ShippingMethodActivity.class);
+                            intent.putExtra("EMAIL",email);
+                            intent.putExtra("B_FIRST_NAME",first_name);
+                            intent.putExtra("B_LAST_NAME",last_name);
+                            intent.putExtra("B_ADDRESS_1",address_1);
+                            intent.putExtra("B_ADDRESS_2",address_2);
+                            intent.putExtra("B_COUNTRY",country);
+                            intent.putExtra("B_POSTCODE",postcode);
+                            intent.putExtra("S_FIRST_NAME",first_name);
+                            intent.putExtra("S_LAST_NAME",last_name);
+                            intent.putExtra("S_ADDRESS_1",address_1);
+                            intent.putExtra("S_ADDRESS_2",address_2);
+                            intent.putExtra("S_COUNTRY",country);
+                            intent.putExtra("S_POSTCODE",postcode);
+                            startActivity(intent);
+                        }
+                        else
+                        {
+                            Intent intent = new Intent(this, ShippingActivity.class);
+                            intent.putExtra("EMAIL",email);
+                            intent.putExtra("B_FIRST_NAME",first_name);
+                            intent.putExtra("B_LAST_NAME",last_name);
+                            intent.putExtra("B_ADDRESS_1",address_1);
+                            intent.putExtra("B_ADDRESS_2",address_2);
+                            intent.putExtra("B_COUNTRY",country);
+                            intent.putExtra("B_POSTCODE",postcode);
+                            startActivity(intent);
+                        }
                     }
                     break;
                 case R.id.btnBack:
@@ -189,6 +200,7 @@ public class ShippingActivity extends Activity {
             e.printStackTrace();
         }
     }
+
 
     private void getCountryCodes() {
         try {
@@ -244,7 +256,7 @@ public class ShippingActivity extends Activity {
                     dialog.dismiss();
                 }
                 country = listCountry.get((int)view.getTag()).getItemId();
-                ((TextView)findViewById(R.id.txtShippingCountry)).setText(listCountry.get((int)view.getTag()).getItemTitle());
+                ((TextView)findViewById(R.id.txtBillingCountry)).setText(listCountry.get((int)view.getTag()).getItemTitle());
             }
         });
         builder.setView(list);
