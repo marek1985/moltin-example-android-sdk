@@ -305,11 +305,11 @@ public class DetailActivity extends Activity implements NumberPicker.OnValueChan
         Button b1 = (Button) d.findViewById(R.id.button1);
         b1.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_violet));
         b1.setTextColor(getResources().getColor(android.R.color.white));
-        b1.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Bold.otf"));
+        b1.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Regular.otf"));
         Button b2 = (Button) d.findViewById(R.id.button2);
         b2.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_violet));
         b2.setTextColor(getResources().getColor(android.R.color.white));
-        b2.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Bold.otf"));
+        b2.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Regular.otf"));
         final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
         np.setMaxValue(100);
         np.setMinValue(1);
@@ -333,9 +333,11 @@ public class DetailActivity extends Activity implements NumberPicker.OnValueChan
                         }
                     }
 
+                    ((LinearLayout)findViewById(R.id.layLoading)).setVisibility(View.VISIBLE);
                     moltin.cart.insert(itemId, np.getValue(), modsArray, new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message msg) {
+                            ((LinearLayout)findViewById(R.id.layLoading)).setVisibility(View.GONE);
                             JSONObject jsonObject = (JSONObject) msg.obj;
                             Log.i("add to cart", jsonObject.toString());
                             if (msg.what == Constants.RESULT_OK) {

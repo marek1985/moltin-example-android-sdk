@@ -66,12 +66,6 @@ public class ProductActivity extends SlidingFragmentActivity implements CartFrag
 
         moltin = new Moltin(this);
 
-        try {
-            getProducts();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         menu = getSlidingMenu();
         menu.setShadowWidth(20);
         menu.setBehindWidth(getListviewWidth()-50);
@@ -108,6 +102,12 @@ public class ProductActivity extends SlidingFragmentActivity implements CartFrag
 
         ((TextView)findViewById(R.id.txtActivityTitle)).setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Regular.otf"));
         ((TextView)findViewById(R.id.txtActivityTitleCart)).setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Regular.otf"));
+
+        try {
+            getProducts();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void setInitialPosition()
@@ -277,9 +277,11 @@ public class ProductActivity extends SlidingFragmentActivity implements CartFrag
     }
 
     private void getProducts() throws Exception {
+        ((LinearLayout)findViewById(R.id.layMainLoading)).setVisibility(View.VISIBLE);
         moltin.product.search(new String[][]{{"collection", itemId}}, new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
+                ((LinearLayout)findViewById(R.id.layMainLoading)).setVisibility(View.GONE);
                 if (msg.what == Constants.RESULT_OK) {
 
                     items = new ArrayList<ProductItem>();

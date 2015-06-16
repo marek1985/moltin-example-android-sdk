@@ -30,11 +30,23 @@
                 android:background="@drawable/background_violet_upper"
                 android:layout_weight="10">
 
-                <com.applidium.shutterbug.FetchableImageView
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/imgItem"
-                    android:scaleType="centerCrop" />
+                    android:layout_height="match_parent">
+
+                    <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/progressBar2"
+                        android:layout_centerInParent="true" />
+
+                    <com.applidium.shutterbug.FetchableImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/imgItem"
+                        android:scaleType="centerCrop" />
+
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout

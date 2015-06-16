@@ -61,31 +61,6 @@ public class CollectionActivity extends SlidingFragmentActivity implements CartF
         instance = this;
 
         moltin = new Moltin(this);
-        try
-        {
-            moltin.authenticate("umRG34nxZVGIuCSPfYf8biBSvtABgTR8GMUtflyE", new Handler.Callback() {//"wf60kt82vtzkjIMslZ1FmDyV8WUWNQlLxUiRVLS4", new Handler.Callback() {
-                @Override
-                public boolean handleMessage(Message msg) {
-                    if (msg.what == Constants.RESULT_OK) {
-
-                        try {
-                            getCollections();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            });
-
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
 
         menu = getSlidingMenu();
         menu.setShadowWidth(20);
@@ -123,6 +98,32 @@ public class CollectionActivity extends SlidingFragmentActivity implements CartF
 
         ((TextView)findViewById(R.id.txtActivityTitle)).setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Regular.otf"));
         ((TextView)findViewById(R.id.txtActivityTitleCart)).setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Regular.otf"));
+
+        try
+        {
+            moltin.authenticate("umRG34nxZVGIuCSPfYf8biBSvtABgTR8GMUtflyE", new Handler.Callback() {//"wf60kt82vtzkjIMslZ1FmDyV8WUWNQlLxUiRVLS4", new Handler.Callback() {
+                @Override
+                public boolean handleMessage(Message msg) {
+                    if (msg.what == Constants.RESULT_OK) {
+
+                        try {
+                            getCollections();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public void setInitialPosition()
@@ -284,9 +285,12 @@ public class CollectionActivity extends SlidingFragmentActivity implements CartF
     }
 
     private void getCollections() throws Exception {
+
+        ((LinearLayout)findViewById(R.id.layMainLoading)).setVisibility(View.VISIBLE);
         moltin.collection.listing((JSONObject) null,new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
+                ((LinearLayout)findViewById(R.id.layMainLoading)).setVisibility(View.GONE);
                 if (msg.what == Constants.RESULT_OK) {
 
                     items=new ArrayList<CollectionItem>();
