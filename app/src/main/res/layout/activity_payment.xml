@@ -116,14 +116,15 @@
                                 android:textColor="@android:color/white"
                                 android:textSize="18dp"
                                 android:singleLine="true"
-                                android:inputType="number" />
+                                android:inputType="number"
+                                android:maxLength="16"/>
 
                             <LinearLayout
                                 android:orientation="horizontal"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" >
 
-                                <EditText
+                                <TextView
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -136,9 +137,10 @@
                                     android:textColor="@android:color/white"
                                     android:textSize="18dp"
                                     android:singleLine="true"
-                                    android:inputType="number" />
+                                    android:clickable="true"
+                                    android:onClick="onClickHandler"/>
 
-                                <EditText
+                                <TextView
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -151,7 +153,8 @@
                                     android:textColor="@android:color/white"
                                     android:textSize="18dp"
                                     android:singleLine="true"
-                                    android:inputType="number" />
+                                    android:clickable="true"
+                                    android:onClick="onClickHandler"/>
                             </LinearLayout>
 
                             <LinearLayout
@@ -172,7 +175,8 @@
                                     android:textColor="@android:color/white"
                                     android:textSize="18dp"
                                     android:singleLine="true"
-                                    android:inputType="number" />
+                                    android:inputType="number"
+                                    android:maxLength="4"/>
 
                             </LinearLayout>
 

@@ -2,6 +2,7 @@ package moltin.example_moltin.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -21,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 
 import moltin.android_sdk.Moltin;
@@ -60,6 +63,9 @@ public class PaymentActivity extends Activity {
     String expiry_month="";//"12";
     String expiry_year="";//"16";
     String cvv="";//"123";
+
+    int month=1;
+    int year=2015;
 
     private ArrayList<ShippingItem> shippingArray;
     private int lastShippingIndex=0;
@@ -157,6 +163,12 @@ public class PaymentActivity extends Activity {
                         findCustomer();
                     }
                     break;
+                case R.id.txtPaymentExpirationMonth:
+                    showMonths();
+                    break;
+                case R.id.txtPaymentExpirationYear:
+                    showYears();
+                    break;
                 case R.id.btnBack:
                     finish();
                     break;
@@ -166,6 +178,101 @@ public class PaymentActivity extends Activity {
         {
             e.printStackTrace();
         }
+    }
+
+    public void showMonths()
+    {
+
+        final Dialog d = new Dialog(this);
+        d.setTitle("Select month");
+        d.setContentView(R.layout.dialog);
+        Button b1 = (Button) d.findViewById(R.id.button1);
+        b1.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_violet));
+        b1.setTextColor(getResources().getColor(android.R.color.white));
+        b1.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Regular.otf"));
+        Button b2 = (Button) d.findViewById(R.id.button2);
+        b2.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_violet));
+        b2.setTextColor(getResources().getColor(android.R.color.white));
+        b2.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Regular.otf"));
+        final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
+
+        month=1;
+        np.setMaxValue(12);
+        np.setMinValue(1);
+        np.setWrapSelectorWheel(false);
+        np.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+                month=i1;
+            }
+        });
+        b1.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                ((TextView)findViewById(R.id.txtPaymentExpirationMonth)).setText(""+month);
+                d.dismiss();
+            }
+        });
+        b2.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                if(((TextView)findViewById(R.id.txtPaymentExpirationMonth)).getText().toString().length()>0)
+                    Integer.parseInt(((TextView)findViewById(R.id.txtPaymentExpirationMonth)).getText().toString());
+                d.dismiss();
+            }
+        });
+        d.show();
+    }
+
+    public void showYears()
+    {
+
+        final Dialog d = new Dialog(this);
+        d.setTitle("Select year");
+        d.setContentView(R.layout.dialog);
+        Button b1 = (Button) d.findViewById(R.id.button1);
+        b1.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_violet));
+        b1.setTextColor(getResources().getColor(android.R.color.white));
+        b1.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Regular.otf"));
+        Button b2 = (Button) d.findViewById(R.id.button2);
+        b2.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_violet));
+        b2.setTextColor(getResources().getColor(android.R.color.white));
+        b2.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "montserrat/Montserrat-Regular.otf"));
+        final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
+
+        Calendar calendar = Calendar.getInstance();
+        int yearToday = calendar.get(Calendar.YEAR);
+        year=yearToday;
+
+        np.setMaxValue(yearToday + 20);
+        np.setMinValue(yearToday);
+        np.setWrapSelectorWheel(false);
+        np.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+                year=i1;
+            }
+        });
+        b1.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                ((TextView)findViewById(R.id.txtPaymentExpirationYear)).setText(""+year);
+                d.dismiss();
+            }
+        });
+        b2.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                if(((TextView)findViewById(R.id.txtPaymentExpirationYear)).getText().toString().length()>0)
+                    Integer.parseInt(((TextView)findViewById(R.id.txtPaymentExpirationYear)).getText().toString());
+                d.dismiss();
+            }
+        });
+        d.show();
     }
 
     private void eraseCurrentCart()
