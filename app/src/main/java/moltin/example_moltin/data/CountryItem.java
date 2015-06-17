@@ -1,6 +1,6 @@
 package moltin.example_moltin.data;
 
-public class CountryItem {
+public class CountryItem implements Comparable<CountryItem> {
 
     private String itemId;
     private String itemTitle;
@@ -32,5 +32,10 @@ public class CountryItem {
 
     public void setItemTitle(String itemTitle) {
         this.itemTitle = itemTitle;
+    }
+
+    @Override
+    public int compareTo(CountryItem country) {
+        return this.getItemTitle().compareTo(country.getItemTitle());
     }
 }

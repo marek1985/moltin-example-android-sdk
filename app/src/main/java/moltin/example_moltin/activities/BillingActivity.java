@@ -20,6 +20,7 @@ import android.widget.TextView;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 import moltin.android_sdk.Moltin;
@@ -240,7 +241,14 @@ public class BillingActivity extends Activity {
 
     public void showCountries(View view)
     {
-
+        try
+        {
+            Collections.sort(listCountry);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         AlertDialog.Builder builder=new AlertDialog.Builder(this);
         builder.setTitle("Country");
         ListView list=new ListView(this);
@@ -285,4 +293,5 @@ public class BillingActivity extends Activity {
             e.printStackTrace();
         }
     }
+
 }
