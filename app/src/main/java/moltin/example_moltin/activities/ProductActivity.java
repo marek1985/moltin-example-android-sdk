@@ -278,7 +278,7 @@ public class ProductActivity extends SlidingFragmentActivity implements CartFrag
 
     private void getProducts() throws Exception {
         ((LinearLayout)findViewById(R.id.layMainLoading)).setVisibility(View.VISIBLE);
-        moltin.product.search(new String[][]{{"collection", itemId}}, new Handler.Callback() {
+        moltin.product.listing(new String[][]{{"collection", itemId}}, new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
                 ((LinearLayout)findViewById(R.id.layMainLoading)).setVisibility(View.GONE);
